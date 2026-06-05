@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PixelWorksDesign â€” Web Design &amp; Development</title>
+<title>PixelWorksDesign — Web Design &amp; Development</title>
 <meta name="description" content="PixelWorksDesign is a web design and development studio building distinctive websites for ambitious brands.">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -339,10 +339,10 @@
       <h1>
         <span class="line-rv"><span>Pixel-perfect,</span></span>
         <span class="line-rv"><span class="grad">performance-obsessed.</span></span>
-        <span class="line-rv"><span class="thin">Built by us â€” built better.</span></span>
+        <span class="line-rv"><span class="thin">Built by us — built better.</span></span>
       </h1>
       <div class="hero-sub">
-        <p class="rv">PixelWorksDesign designs and develops websites for brands that take themselves seriously â€” strategy, design, and engineering under one roof.</p>
+        <p class="rv">PixelWorksDesign designs and develops websites for brands that take themselves seriously — strategy, design, and engineering under one roof.</p>
         <div class="scroll-cue mono rv">Scroll to explore <span class="arr">â†“</span></div>
       </div>
     </section>
@@ -429,10 +429,10 @@
     <section class="sec light" id="studio">
       <div class="sec-top"><span class="num mono grad">03</span><h2>The studio</h2></div>
       <!-- Edit this to describe your studio honestly. Keep it to things that are actually true of you. -->
-      <p class="statement rv">We believe a website is the first thing people meet â€” so we treat every one as <b>the work that represents you</b>, from first idea to final build.</p>
+      <p class="statement rv">We believe a website is the first thing people meet — so we treat every one as <b>the work that represents you</b>, from first idea to final build.</p>
       <!-- These are positioning statements (true for how you work), not invented metrics. Swap in real numbers like turnaround or projects shipped once you have them. -->
       <div class="stat-row">
-        <div class="stat rv"><div class="num" style="font-size:clamp(1.4rem,2.6vw,2.05rem);line-height:1.08">Design <span class="a">+ build</span></div><div class="lbl">Strategy, design &amp; development â€” all in-house.</div></div>
+        <div class="stat rv"><div class="num" style="font-size:clamp(1.4rem,2.6vw,2.05rem);line-height:1.08">Design <span class="a">+ build</span></div><div class="lbl">Strategy, design &amp; development — all in-house.</div></div>
         <div class="stat rv"><div class="num" style="font-size:clamp(1.4rem,2.6vw,2.05rem);line-height:1.08">Senior-<span class="a">led</span></div><div class="lbl">You work directly with the people building your site.</div></div>
         <div class="stat rv"><div class="num" style="font-size:clamp(1.4rem,2.6vw,2.05rem);line-height:1.08">Made to <span class="a">measure</span></div><div class="lbl">Every site built from scratch, never templated.</div></div>
         <div class="stat rv"><div class="num" style="font-size:clamp(1.4rem,2.6vw,2.05rem);line-height:1.08">Built to <span class="a">perform</span></div><div class="lbl">Fast, accessible and SEO-ready as standard.</div></div>
@@ -491,7 +491,7 @@
 
 
   document.querySelectorAll('#budget .chip').forEach(c=>c.addEventListener('click',()=>{document.querySelectorAll('#budget .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');}));
-  function send(e){e.preventDefault();const b=document.getElementById('sendBtn');b.textContent='Thank you â€” we\u2019ll be in touch âœ“';setTimeout(()=>{e.target.reset();document.querySelectorAll('#budget .chip').forEach(x=>x.classList.remove('on'));b.textContent='Send enquiry â†—';},3200);}
+  function send(e){e.preventDefault();const b=document.getElementById('sendBtn');b.textContent='Thank you — we\u2019ll be in touch âœ“';setTimeout(()=>{e.target.reset();document.querySelectorAll('#budget .chip').forEach(x=>x.classList.remove('on'));b.textContent='Send enquiry â†—';},3200);}
 </script>
 <div class="modal" id="adminModal" aria-hidden="true">
   <div class="modal-card">
@@ -633,7 +633,7 @@
   </div>
   <div class="chat-msgs" id="chatMsgs"></div>
   <div class="chat-input"><textarea id="chatText" rows="1" placeholder="Describe your websiteâ€¦"></textarea><button id="chatSend" aria-label="Send">&uarr;</button></div>
-  <div class="chat-foot">Rough estimate â€” not a formal quote.</div>
+  <div class="chat-foot">Rough estimate — not a formal quote.</div>
 </div>
 
 <script>
@@ -651,7 +651,7 @@ Use these typical ranges as a guide:
 Rules: keep replies short and warm (2â€“4 sentences). If the description is too vague, ask ONE clarifying question instead of guessing. When you give an estimate, show a price range and a week range, plus one short reason. ALWAYS note this is a rough estimate, not a formal quote, and suggest the contact form for an exact proposal. Never promise anything as guaranteed.`;
   let history=[],started=false;
   function el(cls,txt){const d=document.createElement('div');d.className='msg '+cls;d.textContent=txt;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
-  function open(){panel.classList.add('show');if(!started){started=true;el('bot',"Hi! Tell me what kind of website you're after â€” what it's for and any key features â€” and I'll give you a rough price and timeline.");}text.focus();}
+  function open(){panel.classList.add('show');if(!started){started=true;el('bot',"Hi! Tell me what kind of website you're after — what it's for and any key features — and I'll give you a rough price and timeline.");}text.focus();}
   fab.addEventListener('click',()=>{panel.classList.contains('show')?panel.classList.remove('show'):open();});
   closeBtn.addEventListener('click',()=>panel.classList.remove('show'));
   text.addEventListener('input',()=>{text.style.height='auto';text.style.height=Math.min(text.scrollHeight,80)+'px';});
