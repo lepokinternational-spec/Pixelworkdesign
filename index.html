@@ -459,7 +459,7 @@
           <div class="sec-top"><span class="num mono grad">05</span><span class="mono" style="color:var(--muted)">Get in touch</span></div>
           <h2>Get in<br><span class="thin">touch.</span></h2>
           <p class="lead rv">Have a question or just want to say hello? Send us a message and we'll get back to you as soon as we can.</p>
-          <a href="mailto:hello@pixelworksdesign.com" class="big-mail rv" id="cEmail" style="margin-top:34px">hello@pixelworksdesign.com ↗</a>
+          <a href="mailto:info@pixelworkdesign.com" class="big-mail rv" id="cEmail" style="margin-top:34px">info@pixelworkdesign.com ↗</a>
           <div class="info-row rv" id="cInfo"></div>
         </div>
         <form class="formcard rv" onsubmit="send(event)">
@@ -475,7 +475,7 @@
 
     <footer class="page-foot">
       <div class="pf-left">
-        <a href="mailto:hello@pixelworksdesign.com" class="pf-mail">hello@pixelworksdesign.com</a>
+        <a href="mailto:info@pixelworkdesign.com" class="pf-mail">info@pixelworkdesign.com</a>
         <span class="pf-cr">© 2026 PixelWorksDesign</span>
       </div>
       <a href="#" class="admin-btn" id="adminOpen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Admin panel</a>
@@ -491,7 +491,20 @@
 
 
   document.querySelectorAll('#budget .chip').forEach(c=>c.addEventListener('click',()=>{document.querySelectorAll('#budget .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');}));
-  function send(e){e.preventDefault();const b=document.getElementById('sendBtn');b.textContent='Thank you — we\u2019ll be in touch ✓';setTimeout(()=>{e.target.reset();document.querySelectorAll('#budget .chip').forEach(x=>x.classList.remove('on'));b.textContent='Send enquiry ↗';},3200);}
+  function send(e){
+    e.preventDefault();
+    const form=e.target;
+    const b=document.getElementById('sendBtn');
+    const name=(form.elements.name.value||'').trim();
+    const email=(form.elements.email.value||'').trim();
+    const msg=(form.elements.msg.value||'').trim();
+    const budget=document.querySelector('#budget .chip.on')?.textContent.trim()||'Not selected';
+    const subject=encodeURIComponent('Website enquiry from '+(name||'PixelWorksDesign site'));
+    const body=encodeURIComponent('Name: '+name+'\nEmail: '+email+'\nBudget: '+budget+'\n\nMessage:\n'+msg);
+    window.location.href='mailto:info@pixelworkdesign.com?subject='+subject+'&body='+body;
+    b.textContent='Opening email ✓';
+    setTimeout(()=>{form.reset();document.querySelectorAll('#budget .chip').forEach(x=>x.classList.remove('on'));b.textContent='Send enquiry ↗';},1800);
+  }
 </script>
 <div class="modal" id="adminModal" aria-hidden="true">
   <div class="modal-card">
@@ -504,7 +517,7 @@
     </div>
     <div id="adminView" style="display:none">
       <div class="modal-sub">Edit your public contact details, and add or update projects clients can track.</div>
-      <div class="admin-field"><label>Email</label><input id="dEmail" placeholder="hello@pixelworksdesign.com"></div>
+      <div class="admin-field"><label>Email</label><input id="dEmail" placeholder="info@pixelworkdesign.com"></div>
       <div class="admin-field"><label>Phone (optional)</label><input id="dPhone" placeholder="+44 ..."></div>
       <div class="admin-field"><label>Based in (optional)</label><input id="dCity" placeholder="London, UK"></div>
       <button class="admin-save" id="dSave">Save details</button>
@@ -539,11 +552,11 @@
   /* CONTACT DETAILS */
   const DKEY='pwd_details';
   let details=loadDetails();
-  function loadDetails(){try{const r=localStorage.getItem(DKEY);if(r)return JSON.parse(r);}catch(e){}return {email:'hello@pixelworksdesign.com',phone:'',city:''};}
+  function loadDetails(){try{const r=localStorage.getItem(DKEY);if(r)return JSON.parse(r);}catch(e){}return {email:'info@pixelworkdesign.com',phone:'',city:''};}
   function saveDetails(){try{localStorage.setItem(DKEY,JSON.stringify(details));}catch(e){}}
   const cEmail=document.getElementById('cEmail'),cInfo=document.getElementById('cInfo');
   function renderContact(){
-    const em=details.email||'hello@pixelworksdesign.com';
+    const em=details.email||'info@pixelworkdesign.com';
     if(cEmail){cEmail.href='mailto:'+em;cEmail.textContent=em+' \u2197';}
     if(cInfo){let h='';if(details.phone)h+='<div><div class="k mono">Phone</div><div class="v">'+esc(details.phone)+'</div></div>';if(details.city)h+='<div><div class="k mono">Based in</div><div class="v">'+esc(details.city)+'</div></div>';cInfo.innerHTML=h;}
   }
@@ -596,7 +609,7 @@
   });
   function fillDetails(){document.getElementById('dEmail').value=details.email||'';document.getElementById('dPhone').value=details.phone||'';document.getElementById('dCity').value=details.city||'';}
   document.getElementById('dSave').addEventListener('click',()=>{
-    details.email=document.getElementById('dEmail').value.trim()||'hello@pixelworksdesign.com';
+    details.email=document.getElementById('dEmail').value.trim()||'info@pixelworkdesign.com';
     details.phone=document.getElementById('dPhone').value.trim();
     details.city=document.getElementById('dCity').value.trim();
     saveDetails();renderContact();
