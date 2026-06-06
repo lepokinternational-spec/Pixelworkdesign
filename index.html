@@ -546,7 +546,7 @@
   function load(){try{const r=localStorage.getItem(KEY);if(r)return JSON.parse(r);}catch(e){}return JSON.parse(JSON.stringify(seed));}
   function save(){try{localStorage.setItem(KEY,JSON.stringify(projects));}catch(e){}}
   function norm(s){return (s||'').trim().toLowerCase();}
-  function titleCase(s){return s.replace(/\b\w/g,c=>c.toUpperCase());}
+  function titleCase(s){return s.replace(/\b\w/g,c=>c.toUpperCase()).replace(/\.Ai\b/g,'.ai').replace(/\.Co\b/g,'.co').replace(/\.Uk\b/g,'.uk');}
   function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
   /* CONTACT DETAILS */
