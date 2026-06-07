@@ -709,8 +709,8 @@
     <button id="chatClose" aria-label="Close">&times;</button>
   </div>
   <div class="chat-msgs" id="chatMsgs"></div>
-  <div class="chat-input"><textarea id="chatText" rows="1" placeholder="Example: I need a website for my travel agency"></textarea><button id="chatSend" aria-label="Send">&uarr;</button></div>
-  <div class="chat-foot">Quick guide only - we will confirm the real price with you.</div>
+  <div class="chat-input"><textarea id="chatText" rows="1" placeholder="Example: I have GBP 3,000 for a travel agency site"></textarea><button id="chatSend" aria-label="Send">&uarr;</button></div>
+  <div class="chat-foot">Budget guide only - we will confirm the real scope with you.</div>
 </div>
 
 <script>
@@ -719,7 +719,7 @@
   const msgs=document.getElementById('chatMsgs'),text=document.getElementById('chatText'),send=document.getElementById('chatSend');
   let started=false,allText='';
   function el(cls,txt){const d=document.createElement('div');d.className='msg '+cls;d.textContent=txt;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
-  function open(){panel.classList.add('show');if(!started){started=true;el('bot',"Hi, I'm Pixie. Tell me what business you run and what you want your website to do, and I'll give you a quick price guide. You can also paste an example website, like: 'I want a crowdfunding website like charityextra.com'.");}text.focus();}
+  function open(){panel.classList.add('show');if(!started){started=true;el('bot',"Hi, I'm Pixie. Tell me your budget, what business you run, and what you want the website to do. I will tell you what we can realistically build for that price. Example: 'I have GBP 3,000 for a travel agency site for information and enquiries'.");}text.focus();}
   fab.addEventListener('click',()=>{panel.classList.contains('show')?panel.classList.remove('show'):open();});
   closeBtn.addEventListener('click',()=>panel.classList.remove('show'));
   text.addEventListener('input',()=>{text.style.height='auto';text.style.height=Math.min(text.scrollHeight,80)+'px';});
@@ -733,6 +733,46 @@
   }
   function has(pattern){return pattern.test(allText.toLowerCase());}
   function numberBefore(pattern){const m=allText.toLowerCase().match(pattern);return m?parseInt(m[1],10):0;}
+  function getBudget(txt){
+    let m=txt.match(/(?:gbp|\u00a3)\s*([0-9][0-9,\.]*)\s*(k|thousand)?/i);
+    if(!m)m=txt.match(/(?:budget|spend|available|max|maximum|up to|around|about|roughly)\D{0,18}([0-9][0-9,\.]*)\s*(k|thousand)?/i);
+    if(!m)m=txt.match(/([0-9][0-9,\.]*)\s*(k|thousand)\s*(?:budget|to spend|available|for)/i);
+    if(!m)return 0;
+    let n=parseFloat(m[1].replace(/,/g,''));
+    if(!Number.isFinite(n))return 0;
+    if(m[2] || n<100)n*=1000;
+    return Math.round(n);
+  }
+  function formatMoney(n){const rounded=Math.round(n/100)*100;return 'GBP '+rounded.toLocaleString('en-GB');}
+  function scopeForBudget(type,budget,typical,plainNeed){
+    const gap=Math.max(0,typical-budget);
+    let can=[],limits=[],next='Send the details through the contact form and we can turn this into a fixed scope.';
+    if(type==='Information website' || type==='One-page website'){
+      if(budget<1200){can=['a simple one-page starter site','your main message, contact details, and a basic enquiry form','mobile-friendly layout if your text and images are ready'];limits=['multiple pages, copywriting, booking, payments, or custom features would not fit this budget'];}
+      else if(budget<2500){can=['a clean one-page or small 2-3 page website','services, about section, photos, contact form, and mobile setup','basic search engine setup'];limits=['large page counts, booking systems, payments, and advanced animation would need a higher budget'];}
+      else{can=['a polished 4-6 page business website','home, services, about, contact, enquiry form, mobile setup, and basic SEO','help arranging your content so the site feels professional'];limits=['online booking, payments, logins, or a large custom system would be quoted separately'];}
+    }else if(type==='Booking website'){
+      if(budget<3500){can=['a business website with service pages and an enquiry form','a button linking to an external booking tool such as Calendly or another booking system'];limits=['a custom built-in booking system would not fit this budget'];}
+      else if(budget<7000){can=['a booking-focused website with service pages','booking request forms or a connected booking tool','confirmation messages and clear enquiry flow'];limits=['complex staff calendars, deposits, customer accounts, or custom scheduling rules may need more budget'];}
+      else{can=['a full booking website with service pages, forms, and booking flow','payment or calendar connection if needed','testing across mobile and desktop'];limits=['very complex booking rules or a large customer portal may need separate quoting'];}
+    }else if(type==='Online shop'){
+      if(budget<4500){can=['a small shop starter using a simple product setup','a limited number of products and basic payment setup'];limits=['large product catalogues, subscriptions, customer accounts, or complex shipping rules would not fit this budget'];}
+      else if(budget<9000){can=['a proper online shop for a small product range','product pages, basket, checkout, payment setup, and order emails'];limits=['large catalogues, advanced filters, subscriptions, or custom stock systems may need more budget'];}
+      else{can=['a stronger ecommerce build with more products and a polished buying flow','payments, order emails, key shop pages, and launch testing'];limits=['marketplace features or complex warehouse integrations would be separate'];}
+    }else if(type==='Crowdfunding / donation platform'){
+      if(budget<12000){can=['a donation-focused website with campaign information','donation buttons or embedded third-party donation forms','basic charity pages and enquiry/contact forms'];limits=['a CharityExtra-style platform with user-created campaign pages, donor accounts, admin dashboards, and full payment flows would not fit this budget'];next='For this budget, I would recommend starting with a simpler donation site first.';}
+      else if(budget<24000){can=['a lean fundraising platform','campaign pages managed by the site owner','secure donation/payment setup, donor emails, and basic admin tracking'];limits=['self-service fundraiser accounts, complex reporting, teams, and advanced dashboards may need a higher budget'];}
+      else{can=['a CharityExtra-style fundraising platform','campaign pages, secure donations, donor records, receipts, and admin tools','a proper launch-ready build with testing'];limits=['very large-scale automation, deep CRM/accounting integrations, and enterprise reporting would be separate'];}
+    }else if(type==='Listing website'){
+      if(budget<6000){can=['a simpler website with manually managed listings','listing detail pages and enquiry forms'];limits=['advanced search, user submissions, payments, or account areas would not fit this budget'];}
+      else{can=['a searchable listing website','listing pages, filters, detail pages, and enquiry forms','admin-friendly content management'];limits=['marketplace payments or complex user dashboards may need more budget'];}
+    }else{
+      if(budget<10000){can=['a simpler public website version of the idea','contact/enquiry forms and clear service pages'];limits=['custom login areas, dashboards, and database-heavy tools would not fit this budget'];}
+      else{can=['a focused first version of the portal or custom system','login flow, core screens, database setup, and admin basics'];limits=['large platforms with many roles, automations, and integrations may need phased pricing'];}
+    }
+    const fit=budget>=typical*0.85?'This budget is realistic for the kind of site you described.':gap>0?'This is below the usual budget for the full version, so I would reduce the first version.':'This budget is realistic.';
+    return {fit,can,limits,next};
+  }
   function estimate(input){
     const txt=input.toLowerCase();
     const exampleMatch=txt.match(/(?:https?:\/\/)?(?:www\.)?([a-z0-9-]+(?:\.[a-z0-9-]+)+)/);
@@ -742,13 +782,14 @@
     const pageCount=numberBefore(/(\d+)\s*(pages?|screens?|sections?)/);
     const productCount=numberBefore(/(\d+)\s*(products?|items?|skus?)/);
     const weeksWanted=numberBefore(/(\d+)\s*(weeks?|wks?)/);
+    const budget=getBudget(txt);
     const wordCount=txt.trim().split(/\s+/).filter(Boolean).length;
     const hasSpecificNeed=/(booking|appointment|calendar|shop|store|sell|payment|checkout|contact|quote|form|gallery|photos?|prices?|menu|login|account|portal|blog|news|search|filter|map|donat|fundrais|campaign|crowdfund|charity|pledge)/.test(txt) || knownExample;
     const vagueRequest=/(not sure|not really sure|don't know|dont know|no idea|unsure|help me decide|not decided)/.test(txt);
     const missing=[];
     if(!knownType || wordCount<5)missing.push('what your business does');
     if(!hasSpecificNeed)missing.push('what visitors should be able to do');
-    if(missing.length>=2 || vagueRequest){return 'I need a little more detail to give a useful guide.\n\nPlease tell me:\n1. What business do you run?\n2. What should customers do on the website? Examples: book, buy, donate, ask for a quote, view prices, see photos.\n3. If it is easier, paste a website that is similar to what you want.';}
+    if(missing.length>=2 || vagueRequest){return 'I need a little more detail to give a useful guide.\n\nPlease tell me:\n1. Your rough budget.\n2. What business you run.\n3. What customers should do on the website. Examples: book, buy, donate, ask for a quote, view prices, see photos.\n4. If it is easier, paste a website that is similar to what you want.';}
 
     let type='Information website',typical=2500,weeksLow=2,weeksHigh=4,plainNeed='a clear website with information about your business, your services, photos if needed, and a way for people to contact you',reasons=['simple information and contact website'];
     if(has(/(charityextra|justgiving|gofundme|givebutter|crowdfunder|donorbox|crowdfund|fundrais|donat|charity|nonprofit|campaign|pledge|sponsor)/)){type='Crowdfunding / donation platform';typical=28500;weeksLow=12;weeksHigh=16;plainNeed='a platform where people can create or view fundraising pages, donate securely, track donations, send receipts, and manage campaigns';reasons=['campaign pages, secure donations, donor records, and admin tools'];}
@@ -770,13 +811,12 @@
     if(has(/(urgent|rush|asap|fast|quick|soon)/) || (weeksWanted && weeksWanted<weeksLow)){typical=Math.round(typical*1.2);reasons.push('short deadline');}
 
     const round=n=>Math.round(n/100)*100;
-    const low=round(typical*0.85),high=round(typical*1.15);
-    const average='GBP '+round(typical).toLocaleString('en-GB');
-    const price='GBP '+low.toLocaleString('en-GB')+'-'+high.toLocaleString('en-GB');
+    if(!budget){return 'This sounds like: '+type+'.\n\nBefore I suggest what we can build, what budget do you want to stay within?\n\nYou can reply like:\n- My budget is GBP 2,500\n- I have around GBP 8,000\n- Maximum GBP 20,000\n\nOnce I know the budget, I will tell you exactly what can fit inside it.';}
+    const scope=scopeForBudget(type,budget,typical,plainNeed);
     const timeline=weeksLow+'-'+weeksHigh+' weeks';
     const reasonText=reasons.slice(0,4).join(', ');
     const reference=exampleSite?'\nExample website mentioned: '+exampleSite+'.':'';
-    return 'This sounds like: '+type+'.'+reference+'\n\nTypical price: about '+average+'\nGuide range: '+price+'\nEstimated time: '+timeline+'\n\nIn plain English: you likely need '+plainNeed+'.\n\nWhy this price: '+reasonText+'.\n\nThe final quote could change depending on how many pages you want, whether your text/photos are ready, and whether you need anything extra like booking, payments, donations, logins, or admin tools.';
+    return 'This sounds like: '+type+'.'+reference+'\n\nYour budget: '+formatMoney(budget)+'\nUsual full build: about '+formatMoney(typical)+'\nEstimated time: '+timeline+'\n\n'+scope.fit+'\n\nFor '+formatMoney(budget)+', we can do:\n- '+scope.can.join('\n- ')+'\n\nNot included at this budget:\n- '+scope.limits.join('\n- ')+'\n\nWhy: '+reasonText+'.\n\n'+scope.next;
   }
 })();
 </script>
