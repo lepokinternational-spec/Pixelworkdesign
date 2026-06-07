@@ -561,6 +561,19 @@
     if(p&&p.url){try{return new URL(p.url).hostname.replace(/^www\./,'');}catch(e){}}
     return key;
   }
+  function inferCategory(name,url){
+    const text=((name||'')+' '+(url||'')).toLowerCase();
+    if(/givver|charity|donat|fundrais|crowdfund|pledge|sponsor/.test(text))return 'Crowdfunding platform';
+    if(/linen|table|cloth|hire|shop|store|ecommerce|product|boutique/.test(text))return 'Ecommerce website';
+    if(/travel|tour|holiday|trip|agency/.test(text))return 'Travel agency website';
+    if(/collective|booking|event|appointment|reservation/.test(text))return 'Booking website';
+    if(/children|child|service|care|school|nursery|clinic|therapy|support/.test(text))return 'Service information website';
+    if(/restaurant|cafe|food|menu|catering/.test(text))return 'Restaurant website';
+    if(/estate|property|realty|letting|homes/.test(text))return 'Property website';
+    if(/portfolio|creative|studio|design|photography/.test(text))return 'Portfolio website';
+    if(url){try{return new URL(url).hostname.replace(/^www\./,'')+' website';}catch(e){}}
+    return 'Business website';
+  }
   function normalizeData(data){
     const next={details:clone(seedData.details),projects:{}};
     if(data&&data.details)next.details={...next.details,...data.details};
@@ -646,6 +659,15 @@
   });
   function fillDetails(){document.getElementById('dEmail').value=details.email||'';document.getElementById('dPhone').value=details.phone||'';document.getElementById('dCity').value=details.city||'';}
   function payload(){return {details,projects};}
+  const pNameInput=document.getElementById('pName'),pUrlInput=document.getElementById('pUrl'),pCategoryInput=document.getElementById('pCategory');
+  function syncAutoCategory(){
+    if(!pCategoryInput)return;
+    const generated=inferCategory(pNameInput.value,pUrlInput.value);
+    if(!pCategoryInput.value.trim()||pCategoryInput.dataset.auto==='1'){pCategoryInput.value=generated;pCategoryInput.dataset.auto='1';}
+  }
+  pNameInput.addEventListener('input',syncAutoCategory);
+  pUrlInput.addEventListener('input',syncAutoCategory);
+  pCategoryInput.addEventListener('input',()=>{pCategoryInput.dataset.auto='0';});
   async function saveToRepo(btn,success){
     if(!adminPasscode){setStatus('Enter your admin passcode first.');return false;}
     const oldText=btn.textContent;
@@ -682,10 +704,12 @@
   });
   document.getElementById('pSave').addEventListener('click',async()=>{
     const name=document.getElementById('pName').value.trim();if(!name)return;
-    projects[norm(name)]={name,category:document.getElementById('pCategory').value.trim(),stage:parseInt(document.getElementById('pStage').value,10),note:document.getElementById('pNote').value.trim(),url:document.getElementById('pUrl').value.trim(),updated:today()};
+    const url=document.getElementById('pUrl').value.trim();
+    const category=document.getElementById('pCategory').value.trim()||inferCategory(name,url);
+    projects[norm(name)]={name,category,stage:parseInt(document.getElementById('pStage').value,10),note:document.getElementById('pNote').value.trim(),url,updated:today()};
     renderAdmin();renderWork();
     const saved=await saveToRepo(document.getElementById('pSave'),'Project saved.');
-    if(saved){document.getElementById('pName').value='';document.getElementById('pCategory').value='';document.getElementById('pNote').value='';document.getElementById('pUrl').value='';document.getElementById('pStage').value='1';}
+    if(saved){document.getElementById('pName').value='';document.getElementById('pCategory').value='';document.getElementById('pCategory').dataset.auto='';document.getElementById('pNote').value='';document.getElementById('pUrl').value='';document.getElementById('pStage').value='1';}
   });
   function renderAdmin(){
     const list=document.getElementById('admList');list.innerHTML='';
