@@ -551,6 +551,7 @@
   let adminPasscode='';
   let details=clone(seedData.details);
   let projects=clone(seedData.projects);
+  let editingProjectKey='';
   function clone(value){return JSON.parse(JSON.stringify(value));}
   function norm(s){return (s||'').trim().toLowerCase();}
   function titleCase(s){return s.replace(/\b\w/g,c=>c.toUpperCase()).replace(/\.Ai\b/g,'.ai').replace(/\.Co\b/g,'.co').replace(/\.Uk\b/g,'.uk');}
@@ -660,6 +661,7 @@
   function fillDetails(){document.getElementById('dEmail').value=details.email||'';document.getElementById('dPhone').value=details.phone||'';document.getElementById('dCity').value=details.city||'';}
   function payload(){return {details,projects};}
   const pNameInput=document.getElementById('pName'),pUrlInput=document.getElementById('pUrl'),pCategoryInput=document.getElementById('pCategory');
+  const pStageInput=document.getElementById('pStage'),pNoteInput=document.getElementById('pNote'),pSaveBtn=document.getElementById('pSave');
   function syncAutoCategory(){
     if(!pCategoryInput)return;
     const generated=inferCategory(pNameInput.value,pUrlInput.value);
@@ -668,6 +670,29 @@
   pNameInput.addEventListener('input',syncAutoCategory);
   pUrlInput.addEventListener('input',syncAutoCategory);
   pCategoryInput.addEventListener('input',()=>{pCategoryInput.dataset.auto='0';});
+  function clearProjectForm(){
+    editingProjectKey='';
+    pNameInput.value='';
+    pUrlInput.value='';
+    pCategoryInput.value='';
+    pCategoryInput.dataset.auto='';
+    pNoteInput.value='';
+    pStageInput.value='1';
+    pSaveBtn.textContent='Save project';
+  }
+  function editProject(key){
+    const p=projects[key];if(!p)return;
+    editingProjectKey=key;
+    pNameInput.value=p.name||displayName(key,p);
+    pUrlInput.value=p.url||'';
+    pCategoryInput.value=p.category||inferCategory(pNameInput.value,pUrlInput.value);
+    pCategoryInput.dataset.auto=p.category?'0':'1';
+    pStageInput.value=String(p.stage||1);
+    pNoteInput.value=p.note||'';
+    pSaveBtn.textContent='Update project';
+    setStatus('Editing '+displayName(key,p)+'.');
+    pNameInput.focus();
+  }
   async function saveToRepo(btn,success){
     if(!adminPasscode){setStatus('Enter your admin passcode first.');return false;}
     const oldText=btn.textContent;
@@ -706,10 +731,14 @@
     const name=document.getElementById('pName').value.trim();if(!name)return;
     const url=document.getElementById('pUrl').value.trim();
     const category=document.getElementById('pCategory').value.trim()||inferCategory(name,url);
+    const oldKey=editingProjectKey;
+    const oldProject=oldKey?projects[oldKey]:null;
+    if(editingProjectKey&&editingProjectKey!==norm(name))delete projects[editingProjectKey];
     projects[norm(name)]={name,category,stage:parseInt(document.getElementById('pStage').value,10),note:document.getElementById('pNote').value.trim(),url,updated:today()};
     renderAdmin();renderWork();
-    const saved=await saveToRepo(document.getElementById('pSave'),'Project saved.');
-    if(saved){document.getElementById('pName').value='';document.getElementById('pCategory').value='';document.getElementById('pCategory').dataset.auto='';document.getElementById('pNote').value='';document.getElementById('pUrl').value='';document.getElementById('pStage').value='1';}
+    const saved=await saveToRepo(document.getElementById('pSave'),editingProjectKey?'Project updated.':'Project saved.');
+    if(saved)clearProjectForm();
+    else if(oldKey&&oldProject){delete projects[norm(name)];projects[oldKey]=oldProject;renderAdmin();renderWork();}
   });
   function renderAdmin(){
     const list=document.getElementById('admList');list.innerHTML='';
@@ -719,9 +748,12 @@
       const p=projects[k];
       const row=document.createElement('div');row.className='adm-item';
       row.innerHTML='<div><div class="nm">'+esc(displayName(k,p))+'</div><div class="stg">'+STAGES[(p.stage||1)-1]+'</div></div>';
+      const editBtn=document.createElement('button');editBtn.textContent='Edit';
+      editBtn.addEventListener('click',()=>editProject(k));
       const btn=document.createElement('button');btn.textContent='Remove';
-      btn.addEventListener('click',async()=>{const removed=projects[k];delete projects[k];renderAdmin();renderWork();const saved=await saveToRepo(btn,'Project removed.');if(!saved){projects[k]=removed;renderAdmin();renderWork();}});
-      row.appendChild(btn);list.appendChild(row);
+      btn.addEventListener('click',async()=>{const removed=projects[k];delete projects[k];if(editingProjectKey===k)clearProjectForm();renderAdmin();renderWork();const saved=await saveToRepo(btn,'Project removed.');if(!saved){projects[k]=removed;renderAdmin();renderWork();}});
+      const actions=document.createElement('div');actions.style.display='flex';actions.style.gap='8px';actions.appendChild(editBtn);actions.appendChild(btn);
+      row.appendChild(actions);list.appendChild(row);
     });
   }
   await loadRepoData();
