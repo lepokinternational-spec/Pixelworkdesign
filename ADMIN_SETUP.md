@@ -24,6 +24,15 @@ Set these as Worker secrets, not public variables:
 ```text
 GITHUB_TOKEN=<fine-grained GitHub token with contents read/write for this repo>
 ADMIN_PASSCODE=<your private admin passcode>
+OPENAI_API_KEY=<your OpenAI API key>
+```
+
+Optional Worker variable:
+
+```text
+OPENAI_MODEL=gpt-5.2
 ```
 
 Do not put `GITHUB_TOKEN` in `index.html`. The Worker keeps it server-side and commits `projects.json` safely through the GitHub API.
+
+Do not put `OPENAI_API_KEY` in `index.html` either. Pixie sends chat messages to the Worker at `/api/chat`, and the Worker calls OpenAI privately. If the AI key is missing, the website falls back to the built-in rough estimator.

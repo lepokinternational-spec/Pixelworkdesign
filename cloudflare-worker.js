@@ -12,6 +12,14 @@ export default {
       return new Response(null, { headers: corsHeaders(request, env) });
     }
 
+    if (url.pathname === "/api/chat") {
+      if (request.method === "POST") {
+        return chatEstimate(request, env);
+      }
+
+      return json({ error: "Method not allowed" }, 405, request, env);
+    }
+
     if (url.pathname !== "/api/projects") {
       return json({ error: "Not found" }, 404, request, env);
     }
@@ -27,6 +35,95 @@ export default {
     return json({ error: "Method not allowed" }, 405, request, env);
   }
 };
+
+async function chatEstimate(request, env) {
+  if (!env.OPENAI_API_KEY) {
+    return json({ error: "OPENAI_API_KEY is not configured" }, 500, request, env);
+  }
+
+  let payload;
+  try {
+    payload = await request.json();
+  } catch {
+    return json({ error: "Invalid JSON" }, 400, request, env);
+  }
+
+  const message = text(payload.message, 2000);
+  if (!message) {
+    return json({ error: "Message is required" }, 400, request, env);
+  }
+
+  const enrichedMessage = await enrichMessageWithExample(message);
+
+  const response = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      "authorization": `Bearer ${env.OPENAI_API_KEY}`,
+      "content-type": "application/json"
+    },
+    body: JSON.stringify({
+      model: env.OPENAI_MODEL || "gpt-5.2",
+      instructions: [
+        "You are Pixie, the helpful website planning assistant for PixelWorksDesign.",
+        "Speak to ordinary business owners, not web designers. Use simple, specific English.",
+        "Your job is to help the visitor understand what kind of website they need and what PixelWorksDesign can realistically do for their budget.",
+        "Always use GBP. Do not give a wide price range unless the user has not given a budget.",
+        "If the user gives a budget, explain exactly what can be included for that budget, what would be extra, and the likely timeline.",
+        "If the user does not give a budget, ask for their budget before giving detailed scope. You may still identify the type of project.",
+        "If the user gives an example website, infer the likely features from it. If you cannot tell, ask for the budget and the example website URL.",
+        "For complex ideas like crowdfunding, marketplace, booking, memberships, logins, payments, dashboards, or custom platforms, say clearly that this is a custom web app and will cost more than a simple information website.",
+        "Never promise a final fixed quote. Say PixelWorksDesign would confirm the final scope after reviewing the details.",
+        "Keep replies under 170 words. No headings unless they make the answer clearer. Do not mention APIs, OpenAI, Cloudflare, or internal setup."
+      ].join(" "),
+      input: enrichedMessage,
+      max_output_tokens: 450
+    })
+  });
+
+  if (!response.ok) {
+    const detail = await response.text();
+    return json({ error: "AI request failed", detail: text(detail, 1000) }, response.status, request, env);
+  }
+
+  const data = await response.json();
+  const reply = text(data.output_text || extractOutputText(data), 1800);
+  if (!reply) {
+    return json({ error: "AI returned an empty reply" }, 502, request, env);
+  }
+
+  return json({ ok: true, reply }, 200, request, env);
+}
+
+async function enrichMessageWithExample(message) {
+  const exampleUrl = firstUrl(message);
+  if (!exampleUrl) return message;
+
+  try {
+    const response = await fetch(exampleUrl, {
+      headers: {
+        "accept": "text/html,application/xhtml+xml",
+        "user-agent": "PixelWorksDesign Pixie estimator"
+      }
+    });
+    if (!response.ok) return message;
+
+    const html = text(await response.text(), 50000);
+    const title = extractTag(html, "title");
+    const description = extractMetaDescription(html);
+    const body = stripHtml(html).slice(0, 1200);
+    const context = [
+      "Example website found by Pixie:",
+      `URL: ${exampleUrl}`,
+      title ? `Title: ${title}` : "",
+      description ? `Description: ${description}` : "",
+      body ? `Visible page text sample: ${body}` : ""
+    ].filter(Boolean).join("\n");
+
+    return `${message}\n\n${context}`;
+  } catch {
+    return message;
+  }
+}
 
 async function readProjects(request, env) {
   const response = await githubFetch(env, contentsUrl(env));
@@ -206,6 +303,62 @@ function cleanUrl(value) {
   } catch {
     return "";
   }
+}
+
+function firstUrl(value) {
+  const raw = String(value || "");
+  const match = raw.match(/\bhttps?:\/\/[^\s<>"']+|\b(?:www\.)?[a-z0-9-]+(?:\.[a-z0-9-]+)+(?:\/[^\s<>"']*)?/i);
+  if (!match) return "";
+  let url = match[0].replace(/[),.;!?]+$/, "");
+  if (!/^https?:\/\//i.test(url)) url = `https://${url}`;
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "http:" || parsed.protocol === "https:" ? parsed.href : "";
+  } catch {
+    return "";
+  }
+}
+
+function extractTag(html, tag) {
+  const match = String(html || "").match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, "i"));
+  return match ? decodeHtml(stripHtml(match[1])).slice(0, 200) : "";
+}
+
+function extractMetaDescription(html) {
+  const match = String(html || "").match(/<meta[^>]+(?:name|property)=["'](?:description|og:description)["'][^>]+content=["']([^"']+)["'][^>]*>/i)
+    || String(html || "").match(/<meta[^>]+content=["']([^"']+)["'][^>]+(?:name|property)=["'](?:description|og:description)["'][^>]*>/i);
+  return match ? decodeHtml(match[1]).slice(0, 300) : "";
+}
+
+function stripHtml(html) {
+  return decodeHtml(String(html || "")
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim());
+}
+
+function decodeHtml(value) {
+  return String(value || "")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, " ");
+}
+
+function extractOutputText(data) {
+  const parts = [];
+  for (const item of data && data.output ? data.output : []) {
+    for (const content of item && item.content ? item.content : []) {
+      if (content && typeof content.text === "string") {
+        parts.push(content.text);
+      }
+    }
+  }
+  return parts.join("\n").trim();
 }
 
 function encodeBase64(value) {
