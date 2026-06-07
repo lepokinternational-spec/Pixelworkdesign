@@ -705,65 +705,69 @@
 </button>
 <div class="chat-panel" id="chatPanel">
   <div class="chat-head">
-    <div><div class="ct">Project estimate</div><div class="cs">Describe your site for a rough price &amp; timeline</div></div>
+    <div><div class="ct">Project estimate</div><div class="cs">Answer a few details for a sharper ballpark</div></div>
     <button id="chatClose" aria-label="Close">&times;</button>
   </div>
   <div class="chat-msgs" id="chatMsgs"></div>
-  <div class="chat-input"><textarea id="chatText" rows="1" placeholder="Describe your website…"></textarea><button id="chatSend" aria-label="Send">&uarr;</button></div>
-  <div class="chat-foot">Rough estimate — not a formal quote.</div>
+  <div class="chat-input"><textarea id="chatText" rows="1" placeholder="Type project type, pages, features, deadline..."></textarea><button id="chatSend" aria-label="Send">&uarr;</button></div>
+  <div class="chat-foot">Detailed estimate - still not a formal quote.</div>
 </div>
 
 <script>
 (function(){
   const fab=document.getElementById('chatFab'),panel=document.getElementById('chatPanel'),closeBtn=document.getElementById('chatClose');
   const msgs=document.getElementById('chatMsgs'),text=document.getElementById('chatText'),send=document.getElementById('chatSend');
-  /* EDIT these ranges to match your real pricing. */
-  const SYSTEM=`You are the friendly project estimator for PixelWorks Design, a web design & development studio. The user describes the website they want; give a rough ballpark ESTIMATE of price (in GBP) and timeline (in weeks).
-Use these typical ranges as a guide:
-- Brochure / marketing site: £1,500–£4,000, 2–4 weeks
-- Ecommerce / subscription: £4,000–£12,000, 4–8 weeks
-- Listing / directory / recruitment: £6,000–£15,000, 6–10 weeks
-- Custom web app: £10,000+, 8+ weeks
-- Ongoing care & maintenance: from £150/month
-Rules: keep replies short and warm (2–4 sentences). If the description is too vague, ask ONE clarifying question instead of guessing. When you give an estimate, show a price range and a week range, plus one short reason. ALWAYS note this is a rough estimate, not a formal quote, and suggest the contact form for an exact proposal. Never promise anything as guaranteed.`;
-  let history=[],started=false;
+  let started=false,allText='';
   function el(cls,txt){const d=document.createElement('div');d.className='msg '+cls;d.textContent=txt;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
-  function open(){panel.classList.add('show');if(!started){started=true;el('bot',"Hi! Tell me what kind of website you're after — what it's for and any key features — and I'll give you a rough price and timeline.");}text.focus();}
+  function open(){panel.classList.add('show');if(!started){started=true;el('bot',"I can give a sharper estimate if you include: site type, number of pages, key features, integrations, and deadline. Example: 'ecommerce site, 20 products, Stripe, login, 6 weeks'.");}text.focus();}
   fab.addEventListener('click',()=>{panel.classList.contains('show')?panel.classList.remove('show'):open();});
   closeBtn.addEventListener('click',()=>panel.classList.remove('show'));
   text.addEventListener('input',()=>{text.style.height='auto';text.style.height=Math.min(text.scrollHeight,80)+'px';});
   text.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();go();}});
   send.addEventListener('click',go);
-  let allText='';
   function go(){
     const t=text.value.trim();if(!t)return;
-    el('user',t);text.value='';text.style.height='auto';
-    allText+=' '+t.toLowerCase();
-    const typing=el('bot typing','Thinking…');
-    setTimeout(()=>{typing.remove();el('bot',estimate(allText));},600);
+    el('user',t);text.value='';text.style.height='auto';allText+=' '+t;
+    const typing=el('bot typing','Calculating...');
+    setTimeout(()=>{typing.remove();el('bot',estimate(allText));},500);
   }
-  function estimate(all){
-    const wordCount=all.trim().split(/\s+/).length;
-    if(wordCount<4 && !/(shop|store|ecommerce|app|portfolio|blog|booking|listing|directory|brochure|website|site)/.test(all)){
-      return "Could you tell me a bit more? For example: is it a simple info/brochure site, an online shop, a booking or listing site, or a custom web app? And roughly how many pages?";
-    }
-    let type,price,weeks,reason;
-    if(/(shop|store|ecommerce|e-commerce|sell|checkout|cart|product|subscription|payment)/.test(all)){
-      type="an online shop";price="\u00a34,000\u2013\u00a312,000";weeks="4\u20138 weeks";reason="Ecommerce needs product pages, a cart and secure payments, which adds build time.";
-    }else if(/(listing|directory|marketplace|recruit|job|vacanc|booking|reservation|appointment)/.test(all)){
-      type="a listing or booking platform";price="\u00a36,000\u2013\u00a315,000";weeks="6\u201310 weeks";reason="Listings, search, profiles and bookings/applications are more involved to build.";
-    }else if(/(app|dashboard|login|account|portal|platform|saas|custom|database|member|web tool)/.test(all)){
-      type="a custom web app";price="from \u00a310,000";weeks="8+ weeks";reason="Custom functionality, user accounts and data handling are bespoke work.";
-    }else{
-      type="a brochure / marketing site";price="\u00a31,500\u2013\u00a34,000";weeks="2\u20134 weeks";reason="A polished multi-page site to present your business.";
-    }
-    const extras=[];
-    if(/(blog|news|article)/.test(all))extras.push("a blog/news section");
-    if(/(multi.?lingual|languages?|translat)/.test(all))extras.push("multiple languages");
-    if(/(animation|interactive|3d|motion)/.test(all))extras.push("rich animation");
-    if(/(integrat|api|crm|stripe|mailchimp|booking system)/.test(all))extras.push("third-party integrations");
-    const ex=extras.length?(" Add-ons like "+extras.join(", ")+" would push it toward the higher end.") : "";
-    return "Based on what you've described \u2014 "+type+" \u2014 a rough estimate would be "+price+" over about "+weeks+". "+reason+ex+"\n\nThis is just a rough guide, not a formal quote. For an exact proposal, send us a message via the contact form and we'll get back to you.";
+  function has(pattern){return pattern.test(allText.toLowerCase());}
+  function numberBefore(pattern){const m=allText.toLowerCase().match(pattern);return m?parseInt(m[1],10):0;}
+  function estimate(input){
+    const txt=input.toLowerCase();
+    const knownType=/(brochure|marketing|portfolio|landing|ecommerce|shop|store|subscription|listing|directory|recruit|job|booking|appointment|dashboard|portal|login|account|app|saas|platform)/.test(txt);
+    const pageCount=numberBefore(/(\d+)\s*(pages?|screens?|sections?)/);
+    const productCount=numberBefore(/(\d+)\s*(products?|items?|skus?)/);
+    const weeksWanted=numberBefore(/(\d+)\s*(weeks?|wks?)/);
+    const missing=[];
+    if(!knownType)missing.push('what type of site this is');
+    if(!pageCount && !productCount)missing.push('rough page/product count');
+    if(!/(stripe|paypal|crm|mailchimp|api|booking|calendar|cms|blog|login|account|payment|search|filter|upload|dashboard)/.test(txt))missing.push('key features or integrations');
+    if(missing.length>=2){return 'To make this specific, tell me '+missing.slice(0,3).join(', ')+'. A good format is: type of site + number of pages/products + must-have features + ideal launch date.';}
+
+    let type='Brochure / marketing website',low=1800,high=4200,weeksLow=2,weeksHigh=4,reasons=[];
+    if(has(/(ecommerce|e-commerce|shop|store|checkout|cart|products?|subscription|payment|stripe|paypal)/)){type='Ecommerce website';low=4500;high=12000;weeksLow=4;weeksHigh=8;reasons.push('commerce setup, product structure, checkout, and payment testing');}
+    else if(has(/(listing|directory|marketplace|recruit|job|vacanc|booking|appointment|reservation)/)){type='Listing / booking platform';low=6500;high=15000;weeksLow=6;weeksHigh=10;reasons.push('search, structured listings, and user actions');}
+    else if(has(/(dashboard|portal|login|account|app|saas|platform|database|member|web tool|custom)/)){type='Custom web app';low=10000;high=24000;weeksLow=8;weeksHigh=14;reasons.push('custom data, user flows, and application logic');}
+    else if(has(/(landing|one page|single page)/)){type='Landing page';low=900;high=2200;weeksLow=1;weeksHigh=2;reasons.push('single-page design and build');}
+    else{reasons.push('design, responsive build, launch setup, and content structure');}
+
+    if(pageCount>6){low+=900;high+=2200;weeksHigh+=1;reasons.push(pageCount+' pages');}
+    if(pageCount>12){low+=1800;high+=4200;weeksLow+=1;weeksHigh+=2;}
+    if(productCount>20){low+=1000;high+=3000;weeksHigh+=1;reasons.push(productCount+' products');}
+    if(productCount>100){low+=2500;high+=6500;weeksLow+=1;weeksHigh+=2;}
+    if(has(/(cms|blog|news|articles?|content management)/)){low+=900;high+=2500;weeksHigh+=1;reasons.push('CMS/blog');}
+    if(has(/(login|account|member|portal)/)){low+=2200;high+=6000;weeksLow+=1;weeksHigh+=2;reasons.push('user accounts');}
+    if(has(/(search|filter|map|directory)/)){low+=1400;high+=4200;weeksHigh+=1;reasons.push('search/filtering');}
+    if(has(/(api|crm|mailchimp|zapier|hubspot|xero|quickbooks|integration)/)){low+=1200;high+=4500;weeksHigh+=1;reasons.push('third-party integration');}
+    if(has(/(animation|motion|interactive|3d|three)/)){low+=900;high+=3500;weeksHigh+=1;reasons.push('advanced interaction/motion');}
+    if(has(/(urgent|rush|asap|fast|quick)/) || (weeksWanted && weeksWanted<weeksLow)){low=Math.round(low*1.2);high=Math.round(high*1.25);reasons.push('compressed timeline');}
+
+    const round=n=>Math.round(n/100)*100;
+    const price='GBP '+round(low).toLocaleString('en-GB')+'-'+round(high).toLocaleString('en-GB');
+    const timeline=weeksLow+'-'+weeksHigh+' weeks';
+    const reasonText=reasons.slice(0,4).join(', ');
+    return type+' estimate: '+price+' and around '+timeline+'.\n\nWhy: '+reasonText+'.\n\nTo firm this up, I would need: exact page list, content readiness, integrations, and whether you need design only, build only, or both. This is a detailed ballpark, not a formal quote.';
   }
 })();
 </script>
