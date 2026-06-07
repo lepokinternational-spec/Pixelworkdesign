@@ -750,32 +750,33 @@
     if(!hasSpecificNeed)missing.push('what visitors should be able to do');
     if(missing.length>=2 || vagueRequest){return 'I need a little more detail to give a useful guide.\n\nPlease tell me:\n1. What business do you run?\n2. What should customers do on the website? Examples: book, buy, donate, ask for a quote, view prices, see photos.\n3. If it is easier, paste a website that is similar to what you want.';}
 
-    let type='Information website',low=1500,high=3500,weeksLow=2,weeksHigh=4,plainNeed='a clear website with information about your business, your services, photos if needed, and a way for people to contact you',reasons=['simple information and contact website'];
-    if(has(/(charityextra|justgiving|gofundme|givebutter|crowdfunder|donorbox|crowdfund|fundrais|donat|charity|nonprofit|campaign|pledge|sponsor)/)){type='Crowdfunding / donation platform';low=15000;high=40000;weeksLow=10;weeksHigh=18;plainNeed='a platform where people can create or view fundraising pages, donate securely, track donations, send receipts, and manage campaigns';reasons=['campaign pages, secure donations, donor records, and admin tools'];}
-    else if(has(/(ecommerce|e-commerce|online shop|shop|store|sell|checkout|cart|products?|subscription|payment|stripe|paypal)/)){type='Online shop';low=4500;high=12000;weeksLow=4;weeksHigh=8;plainNeed='an online shop where customers can view products, add them to a basket, pay online, and receive order emails';reasons=['products, basket, payments, and order testing'];}
-    else if(has(/(booking|appointment|reservation|calendar|table|class|session)/)){type='Booking website';low=3500;high=8500;weeksLow=3;weeksHigh=6;plainNeed='a website where customers can see your services and request or make bookings';reasons=['booking flow, customer details, and confirmation messages'];}
-    else if(has(/(listing|directory|marketplace|recruit|job|vacanc|property|estate|search|filter)/)){type='Listing website';low=6000;high=15000;weeksLow=6;weeksHigh=10;plainNeed='a website with searchable listings, detail pages, and enquiry forms';reasons=['search, filters, listing pages, and enquiries'];}
-    else if(has(/(dashboard|portal|login|account|app|saas|platform|database|member|web tool|custom system)/)){type='Customer portal or custom system';low=10000;high=24000;weeksLow=8;weeksHigh=14;plainNeed='a private area where people can log in, see their information, and use custom tools';reasons=['logins, private data, and custom workflows'];}
-    else if(has(/(landing|one page|single page)/)){type='One-page website';low=900;high=2200;weeksLow=1;weeksHigh=2;plainNeed='one strong page that explains what you do and helps people contact you';reasons=['one focused page'];}
+    let type='Information website',typical=2500,weeksLow=2,weeksHigh=4,plainNeed='a clear website with information about your business, your services, photos if needed, and a way for people to contact you',reasons=['simple information and contact website'];
+    if(has(/(charityextra|justgiving|gofundme|givebutter|crowdfunder|donorbox|crowdfund|fundrais|donat|charity|nonprofit|campaign|pledge|sponsor)/)){type='Crowdfunding / donation platform';typical=28500;weeksLow=12;weeksHigh=16;plainNeed='a platform where people can create or view fundraising pages, donate securely, track donations, send receipts, and manage campaigns';reasons=['campaign pages, secure donations, donor records, and admin tools'];}
+    else if(has(/(ecommerce|e-commerce|online shop|shop|store|sell|checkout|cart|products?|subscription|payment|stripe|paypal)/)){type='Online shop';typical=7500;weeksLow=5;weeksHigh=7;plainNeed='an online shop where customers can view products, add them to a basket, pay online, and receive order emails';reasons=['products, basket, payments, and order testing'];}
+    else if(has(/(booking|appointment|reservation|calendar|table|class|session)/)){type='Booking website';typical=5500;weeksLow=4;weeksHigh=6;plainNeed='a website where customers can see your services and request or make bookings';reasons=['booking flow, customer details, and confirmation messages'];}
+    else if(has(/(listing|directory|marketplace|recruit|job|vacanc|property|estate|search|filter)/)){type='Listing website';typical=9500;weeksLow=7;weeksHigh=10;plainNeed='a website with searchable listings, detail pages, and enquiry forms';reasons=['search, filters, listing pages, and enquiries'];}
+    else if(has(/(dashboard|portal|login|account|app|saas|platform|database|member|web tool|custom system)/)){type='Customer portal or custom system';typical=16500;weeksLow=9;weeksHigh=13;plainNeed='a private area where people can log in, see their information, and use custom tools';reasons=['logins, private data, and custom workflows'];}
+    else if(has(/(landing|one page|single page)/)){type='One-page website';typical=1500;weeksLow=1;weeksHigh=2;plainNeed='one strong page that explains what you do and helps people contact you';reasons=['one focused page'];}
 
-    if(pageCount>6){low+=900;high+=2200;weeksHigh+=1;reasons.push(pageCount+' pages');}
-    if(pageCount>12){low+=1800;high+=4200;weeksLow+=1;weeksHigh+=2;}
-    if(productCount>20){low+=1000;high+=3000;weeksHigh+=1;reasons.push(productCount+' products to set up');}
-    if(productCount>100){low+=2500;high+=6500;weeksLow+=1;weeksHigh+=2;}
-    if(has(/(blog|news|articles?|updates)/)){low+=700;high+=1800;weeksHigh+=1;reasons.push('a news or blog area');}
-    if(has(/(login|account|member|portal)/)){low+=2200;high+=6000;weeksLow+=1;weeksHigh+=2;reasons.push('customer login');}
-    if(has(/(search|filter|map|directory)/)){low+=1200;high+=3500;weeksHigh+=1;reasons.push('search or filters');}
-    if(has(/(api|crm|mailchimp|zapier|hubspot|xero|quickbooks|stripe|paypal|calendar|google calendar)/)){low+=1000;high+=3500;weeksHigh+=1;reasons.push('connecting it to another tool');}
-    if(has(/(animation|motion|interactive|3d|three)/)){low+=900;high+=3500;weeksHigh+=1;reasons.push('extra visual movement');}
-    if(has(/(urgent|rush|asap|fast|quick|soon)/) || (weeksWanted && weeksWanted<weeksLow)){low=Math.round(low*1.2);high=Math.round(high*1.25);reasons.push('short deadline');}
+    if(pageCount>6){typical+=1500;weeksHigh+=1;reasons.push(pageCount+' pages');}
+    if(pageCount>12){typical+=2800;weeksLow+=1;weeksHigh+=2;}
+    if(productCount>20){typical+=1800;weeksHigh+=1;reasons.push(productCount+' products to set up');}
+    if(productCount>100){typical+=4200;weeksLow+=1;weeksHigh+=2;}
+    if(has(/(blog|news|articles?|updates)/)){typical+=1200;weeksHigh+=1;reasons.push('a news or blog area');}
+    if(has(/(login|account|member|portal)/)){typical+=4200;weeksLow+=1;weeksHigh+=2;reasons.push('customer login');}
+    if(has(/(search|filter|map|directory)/)){typical+=2200;weeksHigh+=1;reasons.push('search or filters');}
+    if(has(/(api|crm|mailchimp|zapier|hubspot|xero|quickbooks|stripe|paypal|calendar|google calendar)/)){typical+=2000;weeksHigh+=1;reasons.push('connecting it to another tool');}
+    if(has(/(animation|motion|interactive|3d|three)/)){typical+=1800;weeksHigh+=1;reasons.push('extra visual movement');}
+    if(has(/(urgent|rush|asap|fast|quick|soon)/) || (weeksWanted && weeksWanted<weeksLow)){typical=Math.round(typical*1.2);reasons.push('short deadline');}
 
     const round=n=>Math.round(n/100)*100;
-    const average='GBP '+round((low+high)/2).toLocaleString('en-GB');
-    const price='GBP '+round(low).toLocaleString('en-GB')+'-'+round(high).toLocaleString('en-GB');
+    const low=round(typical*0.85),high=round(typical*1.15);
+    const average='GBP '+round(typical).toLocaleString('en-GB');
+    const price='GBP '+low.toLocaleString('en-GB')+'-'+high.toLocaleString('en-GB');
     const timeline=weeksLow+'-'+weeksHigh+' weeks';
     const reasonText=reasons.slice(0,4).join(', ');
     const reference=exampleSite?'\nExample website mentioned: '+exampleSite+'.':'';
-    return 'This sounds like: '+type+'.'+reference+'\n\nAverage price: about '+average+'\nUsual range: '+price+'\nEstimated time: '+timeline+'\n\nIn plain English: you likely need '+plainNeed+'.\n\nWhy this price: '+reasonText+'.\n\nThe final quote could change depending on how many pages you want, whether your text/photos are ready, and whether you need anything extra like booking, payments, donations, logins, or admin tools.';
+    return 'This sounds like: '+type+'.'+reference+'\n\nTypical price: about '+average+'\nGuide range: '+price+'\nEstimated time: '+timeline+'\n\nIn plain English: you likely need '+plainNeed+'.\n\nWhy this price: '+reasonText+'.\n\nThe final quote could change depending on how many pages you want, whether your text/photos are ready, and whether you need anything extra like booking, payments, donations, logins, or admin tools.';
   }
 })();
 </script>
