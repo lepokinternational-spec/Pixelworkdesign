@@ -811,7 +811,7 @@
     if(has(/(urgent|rush|asap|fast|quick|soon)/) || (weeksWanted && weeksWanted<weeksLow)){typical=Math.round(typical*1.2);reasons.push('short deadline');}
 
     const round=n=>Math.round(n/100)*100;
-    if(!budget){return 'This sounds like: '+type+'.\n\nBefore I suggest what we can build, what budget do you want to stay within?\n\nYou can reply like:\n- My budget is GBP 2,500\n- I have around GBP 8,000\n- Maximum GBP 20,000\n\nOnce I know the budget, I will tell you exactly what can fit inside it.';}
+    if(!budget){return 'This sounds like: '+type+'.\n\nWhat budget would you like to stay within? For example, you could say: \"My budget is around GBP 3,000.\"\n\nOnce I know that, I can tell you what we can realistically build for that amount.';}
     const scope=scopeForBudget(type,budget,typical,plainNeed);
     const timeline=weeksLow+'-'+weeksHigh+' weeks';
     const reasonText=reasons.slice(0,4).join(', ');
