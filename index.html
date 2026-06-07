@@ -705,12 +705,12 @@
 </button>
 <div class="chat-panel" id="chatPanel">
   <div class="chat-head">
-    <div><div class="ct">Project estimate</div><div class="cs">Answer a few details for a sharper ballpark</div></div>
+    <div><div class="ct">Project estimate</div><div class="cs">Tell us what your business needs</div></div>
     <button id="chatClose" aria-label="Close">&times;</button>
   </div>
   <div class="chat-msgs" id="chatMsgs"></div>
-  <div class="chat-input"><textarea id="chatText" rows="1" placeholder="Type project type, pages, features, deadline..."></textarea><button id="chatSend" aria-label="Send">&uarr;</button></div>
-  <div class="chat-foot">Detailed estimate - still not a formal quote.</div>
+  <div class="chat-input"><textarea id="chatText" rows="1" placeholder="Example: I need a website for my travel agency"></textarea><button id="chatSend" aria-label="Send">&uarr;</button></div>
+  <div class="chat-foot">Quick guide only - we will confirm the real price with you.</div>
 </div>
 
 <script>
@@ -719,7 +719,7 @@
   const msgs=document.getElementById('chatMsgs'),text=document.getElementById('chatText'),send=document.getElementById('chatSend');
   let started=false,allText='';
   function el(cls,txt){const d=document.createElement('div');d.className='msg '+cls;d.textContent=txt;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
-  function open(){panel.classList.add('show');if(!started){started=true;el('bot',"I can give a sharper estimate if you include: site type, number of pages, key features, integrations, and deadline. Example: 'ecommerce site, 20 products, Stripe, login, 6 weeks'.");}text.focus();}
+  function open(){panel.classList.add('show');if(!started){started=true;el('bot',"Hi, I can give you a quick website price guide. Just tell me what business you have and what you want the website to do. Example: 'I want a website for my travel agency just for information and to contact me'.");}text.focus();}
   fab.addEventListener('click',()=>{panel.classList.contains('show')?panel.classList.remove('show'):open();});
   closeBtn.addEventListener('click',()=>panel.classList.remove('show'));
   text.addEventListener('input',()=>{text.style.height='auto';text.style.height=Math.min(text.scrollHeight,80)+'px';});
@@ -728,46 +728,47 @@
   function go(){
     const t=text.value.trim();if(!t)return;
     el('user',t);text.value='';text.style.height='auto';allText+=' '+t;
-    const typing=el('bot typing','Calculating...');
+    const typing=el('bot typing','Working it out...');
     setTimeout(()=>{typing.remove();el('bot',estimate(allText));},500);
   }
   function has(pattern){return pattern.test(allText.toLowerCase());}
   function numberBefore(pattern){const m=allText.toLowerCase().match(pattern);return m?parseInt(m[1],10):0;}
   function estimate(input){
     const txt=input.toLowerCase();
-    const knownType=/(brochure|marketing|portfolio|landing|ecommerce|shop|store|subscription|listing|directory|recruit|job|booking|appointment|dashboard|portal|login|account|app|saas|platform)/.test(txt);
+    const knownType=/(website|site|business|company|salon|restaurant|cafe|shop|store|ecommerce|sell|booking|appointment|calendar|quote|form|gallery|portfolio|trade|plumber|electrician|builder|estate|property|clinic|gym|account|login|portal|app|system)/.test(txt);
     const pageCount=numberBefore(/(\d+)\s*(pages?|screens?|sections?)/);
     const productCount=numberBefore(/(\d+)\s*(products?|items?|skus?)/);
     const weeksWanted=numberBefore(/(\d+)\s*(weeks?|wks?)/);
+    const wordCount=txt.trim().split(/\s+/).filter(Boolean).length;
     const missing=[];
-    if(!knownType)missing.push('what type of site this is');
-    if(!pageCount && !productCount)missing.push('rough page/product count');
-    if(!/(stripe|paypal|crm|mailchimp|api|booking|calendar|cms|blog|login|account|payment|search|filter|upload|dashboard)/.test(txt))missing.push('key features or integrations');
-    if(missing.length>=2){return 'To make this specific, tell me '+missing.slice(0,3).join(', ')+'. A good format is: type of site + number of pages/products + must-have features + ideal launch date.';}
+    if(!knownType || wordCount<5)missing.push('what your business does');
+    if(!/(booking|appointment|calendar|shop|store|sell|payment|checkout|contact|quote|form|gallery|photos?|prices?|menu|login|account|portal|blog|news|search|filter|map)/.test(txt))missing.push('what visitors should be able to do');
+    if(missing.length>=2){return 'I need a little more detail to give a useful guide.\n\nPlease tell me:\n1. What business do you run?\n2. What should customers do on the website? Examples: book, buy, ask for a quote, view prices, see photos.\n3. Do you need it soon, or is the timing flexible?';}
 
-    let type='Brochure / marketing website',low=1800,high=4200,weeksLow=2,weeksHigh=4,reasons=[];
-    if(has(/(ecommerce|e-commerce|shop|store|checkout|cart|products?|subscription|payment|stripe|paypal)/)){type='Ecommerce website';low=4500;high=12000;weeksLow=4;weeksHigh=8;reasons.push('commerce setup, product structure, checkout, and payment testing');}
-    else if(has(/(listing|directory|marketplace|recruit|job|vacanc|booking|appointment|reservation)/)){type='Listing / booking platform';low=6500;high=15000;weeksLow=6;weeksHigh=10;reasons.push('search, structured listings, and user actions');}
-    else if(has(/(dashboard|portal|login|account|app|saas|platform|database|member|web tool|custom)/)){type='Custom web app';low=10000;high=24000;weeksLow=8;weeksHigh=14;reasons.push('custom data, user flows, and application logic');}
-    else if(has(/(landing|one page|single page)/)){type='Landing page';low=900;high=2200;weeksLow=1;weeksHigh=2;reasons.push('single-page design and build');}
-    else{reasons.push('design, responsive build, launch setup, and content structure');}
+    let type='Information website',low=1500,high=3500,weeksLow=2,weeksHigh=4,plainNeed='a clear website with information about your business, your services, photos if needed, and a way for people to contact you',reasons=['simple information and contact website'];
+    if(has(/(ecommerce|e-commerce|online shop|shop|store|sell|checkout|cart|products?|subscription|payment|stripe|paypal)/)){type='Online shop';low=4500;high=12000;weeksLow=4;weeksHigh=8;plainNeed='an online shop where customers can view products, add them to a basket, pay online, and receive order emails';reasons=['products, basket, payments, and order testing'];}
+    else if(has(/(booking|appointment|reservation|calendar|table|class|session)/)){type='Booking website';low=3500;high=8500;weeksLow=3;weeksHigh=6;plainNeed='a website where customers can see your services and request or make bookings';reasons=['booking flow, customer details, and confirmation messages'];}
+    else if(has(/(listing|directory|marketplace|recruit|job|vacanc|property|estate|search|filter)/)){type='Listing website';low=6000;high=15000;weeksLow=6;weeksHigh=10;plainNeed='a website with searchable listings, detail pages, and enquiry forms';reasons=['search, filters, listing pages, and enquiries'];}
+    else if(has(/(dashboard|portal|login|account|app|saas|platform|database|member|web tool|custom system)/)){type='Customer portal or custom system';low=10000;high=24000;weeksLow=8;weeksHigh=14;plainNeed='a private area where people can log in, see their information, and use custom tools';reasons=['logins, private data, and custom workflows'];}
+    else if(has(/(landing|one page|single page)/)){type='One-page website';low=900;high=2200;weeksLow=1;weeksHigh=2;plainNeed='one strong page that explains what you do and helps people contact you';reasons=['one focused page'];}
 
     if(pageCount>6){low+=900;high+=2200;weeksHigh+=1;reasons.push(pageCount+' pages');}
     if(pageCount>12){low+=1800;high+=4200;weeksLow+=1;weeksHigh+=2;}
-    if(productCount>20){low+=1000;high+=3000;weeksHigh+=1;reasons.push(productCount+' products');}
+    if(productCount>20){low+=1000;high+=3000;weeksHigh+=1;reasons.push(productCount+' products to set up');}
     if(productCount>100){low+=2500;high+=6500;weeksLow+=1;weeksHigh+=2;}
-    if(has(/(cms|blog|news|articles?|content management)/)){low+=900;high+=2500;weeksHigh+=1;reasons.push('CMS/blog');}
-    if(has(/(login|account|member|portal)/)){low+=2200;high+=6000;weeksLow+=1;weeksHigh+=2;reasons.push('user accounts');}
-    if(has(/(search|filter|map|directory)/)){low+=1400;high+=4200;weeksHigh+=1;reasons.push('search/filtering');}
-    if(has(/(api|crm|mailchimp|zapier|hubspot|xero|quickbooks|integration)/)){low+=1200;high+=4500;weeksHigh+=1;reasons.push('third-party integration');}
-    if(has(/(animation|motion|interactive|3d|three)/)){low+=900;high+=3500;weeksHigh+=1;reasons.push('advanced interaction/motion');}
-    if(has(/(urgent|rush|asap|fast|quick)/) || (weeksWanted && weeksWanted<weeksLow)){low=Math.round(low*1.2);high=Math.round(high*1.25);reasons.push('compressed timeline');}
+    if(has(/(blog|news|articles?|updates)/)){low+=700;high+=1800;weeksHigh+=1;reasons.push('a news or blog area');}
+    if(has(/(login|account|member|portal)/)){low+=2200;high+=6000;weeksLow+=1;weeksHigh+=2;reasons.push('customer login');}
+    if(has(/(search|filter|map|directory)/)){low+=1200;high+=3500;weeksHigh+=1;reasons.push('search or filters');}
+    if(has(/(api|crm|mailchimp|zapier|hubspot|xero|quickbooks|stripe|paypal|calendar|google calendar)/)){low+=1000;high+=3500;weeksHigh+=1;reasons.push('connecting it to another tool');}
+    if(has(/(animation|motion|interactive|3d|three)/)){low+=900;high+=3500;weeksHigh+=1;reasons.push('extra visual movement');}
+    if(has(/(urgent|rush|asap|fast|quick|soon)/) || (weeksWanted && weeksWanted<weeksLow)){low=Math.round(low*1.2);high=Math.round(high*1.25);reasons.push('short deadline');}
 
     const round=n=>Math.round(n/100)*100;
+    const average='GBP '+round((low+high)/2).toLocaleString('en-GB');
     const price='GBP '+round(low).toLocaleString('en-GB')+'-'+round(high).toLocaleString('en-GB');
     const timeline=weeksLow+'-'+weeksHigh+' weeks';
     const reasonText=reasons.slice(0,4).join(', ');
-    return type+' estimate: '+price+' and around '+timeline+'.\n\nWhy: '+reasonText+'.\n\nTo firm this up, I would need: exact page list, content readiness, integrations, and whether you need design only, build only, or both. This is a detailed ballpark, not a formal quote.';
+    return 'This sounds like: '+type+'.\n\nAverage price: about '+average+'\nUsual range: '+price+'\nEstimated time: '+timeline+'\n\nIn plain English: you likely need '+plainNeed+'.\n\nWhy this price: '+reasonText+'.\n\nThe final quote could change depending on how many pages you want, whether your text/photos are ready, and whether you need anything extra like booking or payments.';
   }
 })();
 </script>
