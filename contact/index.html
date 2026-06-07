@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact PixelWorksDesign | Start a Website Project</title>
+<meta name="description" content="Contact PixelWorksDesign to discuss a new website, ecommerce project, or custom web build.">
+<link rel="canonical" href="https://www.pixelworkdesign.com/contact/">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300..700;1,300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site-pages.css">
+</head>
+<body>
+<header class="top"><div class="wrap top-inner"><a class="brand" href="/">PixelWorks<span>Design</span></a><nav class="nav"><a href="/work/">Work</a><a href="/services/">Services</a><a href="/about/">About</a><a href="/contact/" class="active">Contact</a><a class="cta" href="/contact/">Start a project</a></nav></div></header>
+<main>
+  <section class="hero wrap">
+    <div class="eyebrow mono">Contact</div>
+    <h1>Tell us what you want to build.</h1>
+    <p>Send a short message about the website you need and we will reply by email as soon as we can.</p>
+  </section>
+  <section class="section"><div class="wrap"><div class="section-head"><span class="mono grad">04</span><h2>Start A Project</h2></div><form class="form" onsubmit="sendContact(event)"><div class="field"><label class="mono">Name</label><input name="name" placeholder="Jane Appleseed" required></div><div class="field"><label class="mono">Email</label><input type="email" name="email" placeholder="jane@company.com" required></div><div class="field"><label class="mono">Message</label><textarea name="message" placeholder="Tell us what you need" required></textarea></div><button class="cta button" type="submit">Open Email</button></form></div></section>
+</main>
+<footer class="footer"><div class="wrap"><span>&copy; 2026 PixelWorksDesign</span><a href="mailto:info@pixelworkdesign.com">info@pixelworkdesign.com</a></div></footer>
+<script>
+function sendContact(e){
+  e.preventDefault();
+  const form=e.target;
+  const name=(form.elements.name.value||'').trim();
+  const email=(form.elements.email.value||'').trim();
+  const message=(form.elements.message.value||'').trim();
+  const subject=encodeURIComponent('Website enquiry from '+(name||'PixelWorksDesign site'));
+  const body=encodeURIComponent('Name: '+name+'\nEmail: '+email+'\n\nMessage:\n'+message);
+  window.location.href='mailto:info@pixelworkdesign.com?subject='+subject+'&body='+body;
+}
+</script>
+</body>
+</html>

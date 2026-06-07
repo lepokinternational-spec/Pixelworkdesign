@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selected Work | PixelWorksDesign</title>
+<meta name="description" content="Selected website design and development projects by PixelWorksDesign.">
+<link rel="canonical" href="https://www.pixelworkdesign.com/work/">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300..700;1,300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site-pages.css">
+</head>
+<body>
+<header class="top"><div class="wrap top-inner"><a class="brand" href="/">PixelWorks<span>Design</span></a><nav class="nav"><a href="/work/" class="active">Work</a><a href="/services/">Services</a><a href="/about/">About</a><a href="/contact/">Contact</a><a class="cta" href="/contact/">Start a project</a></nav></div></header>
+<main>
+  <section class="hero wrap">
+    <div class="eyebrow mono">Selected Work</div>
+    <h1>Websites built to look sharp and work hard.</h1>
+    <p>A focused look at live projects, launches, and digital products designed and developed by PixelWorksDesign.</p>
+  </section>
+  <section class="section light"><div class="wrap"><div class="section-head"><span class="mono grad">01</span><h2>Live Projects</h2></div><div class="grid" id="workGrid"></div></div></section>
+</main>
+<footer class="footer"><div class="wrap"><span>&copy; 2026 PixelWorksDesign</span><a href="mailto:info@pixelworkdesign.com">info@pixelworkdesign.com</a></div></footer>
+<script>
+(async function(){
+  const fallback={projects:{"givver.ai":{name:"Givver.ai",category:"Crowdfunding platform &middot; Web app",stage:4,url:"https://givver.ai"},"the linen collection":{name:"The Linen Collection",category:"Tableware &amp; tablecloth hire &middot; Ecommerce",stage:4,url:"https://tcgemach.co.uk"}}};
+  const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  let data=fallback;
+  try{const res=await fetch('/projects.json',{cache:'no-store'});if(res.ok)data=await res.json();}catch(e){}
+  const grid=document.getElementById('workGrid');
+  Object.values(data.projects||{}).filter(p=>p.url&&p.stage===4).forEach(p=>{
+    const a=document.createElement('a');
+    a.className='work-card';a.href=p.url;a.target='_blank';a.rel='noopener';
+    a.innerHTML='<div class="shot"><img loading="lazy" alt="Screenshot of '+esc(p.name)+'" src="https://s.wordpress.com/mshots/v1/'+encodeURIComponent(p.url)+'?w=1200&h=750"></div><div class="meta"><div><h3>'+esc(p.name)+'</h3><div class="c">'+(p.category||'Live website')+'</div></div><span class="go">&#8599;</span></div>';
+    grid.appendChild(a);
+  });
+})();
+</script>
+</body>
+</html>
