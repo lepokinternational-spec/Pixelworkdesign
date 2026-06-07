@@ -1,0 +1,25 @@
+{
+  "details": {
+    "email": "info@pixelworkdesign.com",
+    "phone": "",
+    "city": ""
+  },
+  "projects": {
+    "givver.ai": {
+      "name": "Givver.ai",
+      "category": "Crowdfunding platform · Web app",
+      "stage": 4,
+      "note": "Launched and live.",
+      "updated": "7 Jun 2026",
+      "url": "https://givver.ai"
+    },
+    "the linen collection": {
+      "name": "The Linen Collection",
+      "category": "Tableware & tablecloth hire · Ecommerce",
+      "stage": 4,
+      "note": "Launched and live.",
+      "updated": "7 Jun 2026",
+      "url": "https://tcgemach.co.uk"
+    }
+  }
+}

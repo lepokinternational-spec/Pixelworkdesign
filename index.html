@@ -513,7 +513,7 @@
       <div class="modal-sub">Enter the admin passcode to manage projects.</div>
       <div class="admin-field"><label>Passcode</label><input id="gateInput" type="password" placeholder="Passcode"></div>
       <button class="admin-save" id="gateBtn">Unlock</button>
-      <div class="gate-note">Demo passcode: <b style="color:var(--fg)">pixel2026</b>. This is a front-end demo gate, not real security, and projects are saved only in this browser. For a real admin login with a shared database, see the note from your developer.</div>
+      <div class="gate-note">Enter your private admin passcode. Changes are sent to the secure API and committed to the GitHub repo as <b style="color:var(--fg)">projects.json</b>.</div>
     </div>
     <div id="adminView" style="display:none">
       <div class="modal-sub">Edit your public contact details, and add or update projects clients can track.</div>
@@ -524,36 +524,70 @@
       <div class="admin-sec-div"></div>
       <div class="admin-field"><label>Project name</label><input id="pName" placeholder="e.g. Acme Co."></div>
       <div class="admin-field"><label>Live URL (optional)</label><input id="pUrl" placeholder="https://example.com"></div>
+      <div class="admin-field"><label>Category / description</label><input id="pCategory" placeholder="Web app &middot; Ecommerce"></div>
       <div class="admin-field"><label>Current stage</label><select id="pStage"><option value="1">Discover</option><option value="2">Design</option><option value="3">Build</option><option value="4">Launch</option></select></div>
       <div class="admin-field"><label>Note for the client (optional)</label><textarea id="pNote" rows="2" placeholder="e.g. Homepage design is ready for your review."></textarea></div>
       <button class="admin-save" id="pSave">Save project</button>
+      <div class="modal-sub" id="adminStatus" style="margin-top:14px"></div>
       <div class="admin-list"><h4>Current projects</h4><div id="admList"></div></div>
     </div>
   </div>
 </div>
 
 <script>
-(function(){
+(async function(){
   const STAGES=["Discover","Design","Build","Launch"];
-  const KEY='pwd_projects';
-  const PASS='pixel2026'; /* CHANGE THIS passcode */
+  const DATA_URL='projects.json';
+  const ADMIN_API='/api/projects';
   function today(){return new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}
-  const seed={
-    "givver.ai":{stage:4,note:"Launched and live.",updated:today()},
-    "the linen collection":{stage:4,note:"Launched and live.",updated:today()}
+  const seedData={
+    details:{email:'info@pixelworkdesign.com',phone:'',city:''},
+    projects:{
+      "givver.ai":{name:"Givver.ai",category:"Crowdfunding platform \u00b7 Web app",stage:4,note:"Launched and live.",updated:"7 Jun 2026",url:"https://givver.ai"},
+      "the linen collection":{name:"The Linen Collection",category:"Tableware & tablecloth hire \u00b7 Ecommerce",stage:4,note:"Launched and live.",updated:"7 Jun 2026",url:"https://tcgemach.co.uk"}
+    }
   };
-  let projects=load();
-  function load(){try{const r=localStorage.getItem(KEY);if(r)return JSON.parse(r);}catch(e){}return JSON.parse(JSON.stringify(seed));}
-  function save(){try{localStorage.setItem(KEY,JSON.stringify(projects));}catch(e){}}
+  let adminPasscode='';
+  let details=clone(seedData.details);
+  let projects=clone(seedData.projects);
+  function clone(value){return JSON.parse(JSON.stringify(value));}
   function norm(s){return (s||'').trim().toLowerCase();}
   function titleCase(s){return s.replace(/\b\w/g,c=>c.toUpperCase()).replace(/\.Ai\b/g,'.ai').replace(/\.Co\b/g,'.co').replace(/\.Uk\b/g,'.uk');}
   function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+  function displayName(key,p){return (p&&p.name)||titleCase(key);}
+  function displayCategory(key,p){
+    if(p&&p.category)return p.category;
+    if(p&&p.url){try{return new URL(p.url).hostname.replace(/^www\./,'');}catch(e){}}
+    return key;
+  }
+  function normalizeData(data){
+    const next={details:clone(seedData.details),projects:{}};
+    if(data&&data.details)next.details={...next.details,...data.details};
+    const source=(data&&data.projects)||{};
+    Object.keys(source).forEach(k=>{
+      const p=source[k]||{};
+      const name=(p.name||k||'').trim();
+      if(!name)return;
+      next.projects[norm(name)]={name,category:p.category||'',stage:Math.min(4,Math.max(1,parseInt(p.stage||1,10))),note:p.note||'',updated:p.updated||'',url:p.url||''};
+    });
+    return next;
+  }
+  function applyData(data){
+    const next=normalizeData(data);
+    details=next.details;
+    projects=next.projects;
+    renderContact();
+    renderWork();
+    renderAdmin();
+  }
+  async function loadRepoData(){
+    try{
+      const res=await fetch(DATA_URL+'?v='+Date.now(),{cache:'no-store'});
+      if(res.ok)applyData(await res.json());
+    }catch(e){}
+  }
 
   /* CONTACT DETAILS */
-  const DKEY='pwd_details';
-  let details=loadDetails();
-  function loadDetails(){try{const r=localStorage.getItem(DKEY);if(r)return JSON.parse(r);}catch(e){}return {email:'info@pixelworkdesign.com',phone:'',city:''};}
-  function saveDetails(){try{localStorage.setItem(DKEY,JSON.stringify(details));}catch(e){}}
   const cEmail=document.getElementById('cEmail'),cInfo=document.getElementById('cInfo');
   function renderContact(){
     const em=details.email||'info@pixelworkdesign.com';
@@ -566,14 +600,13 @@
   const workCards=document.getElementById('workCards');
   function renderWork(){
     if(!workCards)return;
-    workCards.querySelectorAll('.dyn').forEach(n=>n.remove());
+    workCards.innerHTML='';
     Object.keys(projects).forEach(k=>{
       const p=projects[k];
       if(!p.url||p.stage!==4)return;
-      let host=p.url;try{host=new URL(p.url).hostname.replace(/^www\./,'');}catch(e){}
       const a=document.createElement('a');
-      a.href=p.url;a.target='_blank';a.rel='noopener';a.className='wcard dyn';
-      a.innerHTML='<div class="shot"><img loading="lazy" alt="Screenshot of '+esc(titleCase(k))+'" src="https://s.wordpress.com/mshots/v1/'+encodeURIComponent(p.url)+'?w=1200&h=750"></div><span class="badge"><span class="d"></span>Live</span><div class="meta"><div><h3>'+esc(titleCase(k))+'</h3><div class="c">'+esc(host)+'</div></div><span class="go">\u2197</span></div>';
+      a.href=p.url;a.target='_blank';a.rel='noopener';a.className='wcard rv in';
+      a.innerHTML='<div class="shot"><img loading="lazy" alt="Screenshot of '+esc(displayName(k,p))+'" src="https://s.wordpress.com/mshots/v1/'+encodeURIComponent(p.url)+'?w=1200&h=750"></div><span class="badge"><span class="d"></span>Live</span><div class="meta"><div><h3>'+esc(displayName(k,p))+'</h3><div class="c">'+esc(displayCategory(k,p))+'</div></div><span class="go">\u2197</span></div>';
       workCards.appendChild(a);
     });
   }
@@ -588,7 +621,7 @@
     if(!p){tr.innerHTML='<div class="tr-none">We couldn\u2019t find a project by that name. Double-check the spelling, or get in touch and we\u2019ll help.</div>';tr.classList.add('show');return;}
     let steps='';
     for(let i=0;i<4;i++){const n=i+1;const cls=n<p.stage?'done':(n===p.stage?'done current':'');steps+='<div class="step '+cls+'"><span class="sline"></span><span class="sdot"></span><span class="slabel">'+STAGES[i]+'</span></div>';}
-    tr.innerHTML='<div class="tr-name">'+esc(titleCase(key))+'</div><div class="tr-updated">Updated '+esc(p.updated||'')+'</div><div class="steps-bar">'+steps+'</div>'+(p.note?'<div class="tr-note">'+esc(p.note)+'</div>':'');
+    tr.innerHTML='<div class="tr-name">'+esc(displayName(key,p))+'</div><div class="tr-updated">Updated '+esc(p.updated||'')+'</div><div class="steps-bar">'+steps+'</div>'+(p.note?'<div class="tr-note">'+esc(p.note)+'</div>':'');
     tr.classList.add('show');
   }
   tb.addEventListener('click',check);
@@ -596,30 +629,59 @@
 
   /* ADMIN */
   const modal=document.getElementById('adminModal'),gateView=document.getElementById('gateView'),adminView=document.getElementById('adminView');
+  const adminStatus=document.getElementById('adminStatus');
+  function setStatus(msg){if(adminStatus)adminStatus.textContent=msg||'';}
   document.getElementById('adminOpen').addEventListener('click',e=>{e.preventDefault();modal.classList.add('show');});
   if(location.hash==='#admin')modal.classList.add('show');
   window.addEventListener('hashchange',()=>{if(location.hash==='#admin')modal.classList.add('show');});
-  function closeModal(){modal.classList.remove('show');gateView.style.display='block';adminView.style.display='none';}
+  function closeModal(){modal.classList.remove('show');gateView.style.display='block';adminView.style.display='none';setStatus('');}
   document.getElementById('adminClose').addEventListener('click',closeModal);
   modal.addEventListener('click',e=>{if(e.target===modal)closeModal();});
   document.getElementById('gateBtn').addEventListener('click',()=>{
     const g=document.getElementById('gateInput');
-    if(g.value.trim().toLowerCase()===PASS){gateView.style.display='none';adminView.style.display='block';renderAdmin();fillDetails();g.value='';}
-    else{g.value='';g.placeholder='Wrong passcode \u2014 try again';}
+    adminPasscode=g.value.trim();
+    if(adminPasscode){gateView.style.display='none';adminView.style.display='block';renderAdmin();fillDetails();g.value='';setStatus('Changes will be committed to projects.json.');}
+    else{g.placeholder='Enter your admin passcode';}
   });
   function fillDetails(){document.getElementById('dEmail').value=details.email||'';document.getElementById('dPhone').value=details.phone||'';document.getElementById('dCity').value=details.city||'';}
-  document.getElementById('dSave').addEventListener('click',()=>{
+  function payload(){return {details,projects};}
+  async function saveToRepo(btn,success){
+    if(!adminPasscode){setStatus('Enter your admin passcode first.');return false;}
+    const oldText=btn.textContent;
+    btn.disabled=true;btn.textContent='Saving...';setStatus('Saving to GitHub...');
+    try{
+      const res=await fetch(ADMIN_API,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+adminPasscode},body:JSON.stringify(payload())});
+      if(!res.ok){
+        let message='Save failed.';
+        try{const body=await res.json();if(body.error)message=body.error;}catch(e){}
+        if(res.status===404)message='Admin API is not connected yet. Deploy the Cloudflare Worker first.';
+        throw new Error(message);
+      }
+      setStatus(success+' GitHub Pages will update after the repo redeploys.');
+      btn.textContent='Saved \u2713';
+      setTimeout(()=>{btn.textContent=oldText;},1600);
+      return true;
+    }catch(e){
+      setStatus(e.message||'Save failed.');
+      btn.textContent=oldText;
+      return false;
+    }finally{
+      btn.disabled=false;
+    }
+  }
+  document.getElementById('dSave').addEventListener('click',async()=>{
     details.email=document.getElementById('dEmail').value.trim()||'info@pixelworkdesign.com';
     details.phone=document.getElementById('dPhone').value.trim();
     details.city=document.getElementById('dCity').value.trim();
-    saveDetails();renderContact();
-    const b=document.getElementById('dSave');b.textContent='Saved \u2713';setTimeout(()=>{b.textContent='Save details';},1600);
+    renderContact();
+    await saveToRepo(document.getElementById('dSave'),'Contact details saved.');
   });
-  document.getElementById('pSave').addEventListener('click',()=>{
+  document.getElementById('pSave').addEventListener('click',async()=>{
     const name=document.getElementById('pName').value.trim();if(!name)return;
-    projects[norm(name)]={stage:parseInt(document.getElementById('pStage').value,10),note:document.getElementById('pNote').value.trim(),url:document.getElementById('pUrl').value.trim(),updated:today()};
-    save();renderAdmin();renderWork();
-    document.getElementById('pName').value='';document.getElementById('pNote').value='';document.getElementById('pUrl').value='';document.getElementById('pStage').value='1';
+    projects[norm(name)]={name,category:document.getElementById('pCategory').value.trim(),stage:parseInt(document.getElementById('pStage').value,10),note:document.getElementById('pNote').value.trim(),url:document.getElementById('pUrl').value.trim(),updated:today()};
+    renderAdmin();renderWork();
+    const saved=await saveToRepo(document.getElementById('pSave'),'Project saved.');
+    if(saved){document.getElementById('pName').value='';document.getElementById('pCategory').value='';document.getElementById('pNote').value='';document.getElementById('pUrl').value='';document.getElementById('pStage').value='1';}
   });
   function renderAdmin(){
     const list=document.getElementById('admList');list.innerHTML='';
@@ -628,12 +690,13 @@
     keys.forEach(k=>{
       const p=projects[k];
       const row=document.createElement('div');row.className='adm-item';
-      row.innerHTML='<div><div class="nm">'+esc(titleCase(k))+'</div><div class="stg">'+STAGES[(p.stage||1)-1]+'</div></div>';
+      row.innerHTML='<div><div class="nm">'+esc(displayName(k,p))+'</div><div class="stg">'+STAGES[(p.stage||1)-1]+'</div></div>';
       const btn=document.createElement('button');btn.textContent='Remove';
-      btn.addEventListener('click',()=>{delete projects[k];save();renderAdmin();renderWork();});
+      btn.addEventListener('click',async()=>{const removed=projects[k];delete projects[k];renderAdmin();renderWork();const saved=await saveToRepo(btn,'Project removed.');if(!saved){projects[k]=removed;renderAdmin();renderWork();}});
       row.appendChild(btn);list.appendChild(row);
     });
   }
+  await loadRepoData();
 })();
 </script>
 <button class="chat-fab" id="chatFab" aria-label="Estimate your project">
