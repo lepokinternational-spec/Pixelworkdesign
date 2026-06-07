@@ -11,7 +11,7 @@
       "stage": 4,
       "note": "Launched and live.",
       "updated": "7 Jun 2026",
-      "url": "https://givver.ai"
+      "url": "https://givver.ai/"
     },
     "the linen collection": {
       "name": "The Linen Collection",
@@ -19,7 +19,15 @@
       "stage": 4,
       "note": "Launched and live.",
       "updated": "7 Jun 2026",
-      "url": "https://tcgemach.co.uk"
+      "url": "https://tcgemach.co.uk/"
+    },
+    "brighthaven childrens services": {
+      "name": "Brighthaven Childrens Services",
+      "category": "Informative",
+      "stage": 4,
+      "note": "",
+      "updated": "7 Jun 2026",
+      "url": ""
     }
   }
 }
