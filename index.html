@@ -705,7 +705,7 @@
 </button>
 <div class="chat-panel" id="chatPanel">
   <div class="chat-head">
-    <div><div class="ct">Project estimate</div><div class="cs">Tell us what your business needs</div></div>
+    <div><div class="ct">Pixie</div><div class="cs">Your quick website price guide</div></div>
     <button id="chatClose" aria-label="Close">&times;</button>
   </div>
   <div class="chat-msgs" id="chatMsgs"></div>
@@ -719,7 +719,7 @@
   const msgs=document.getElementById('chatMsgs'),text=document.getElementById('chatText'),send=document.getElementById('chatSend');
   let started=false,allText='';
   function el(cls,txt){const d=document.createElement('div');d.className='msg '+cls;d.textContent=txt;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
-  function open(){panel.classList.add('show');if(!started){started=true;el('bot',"Hi, I can give you a quick website price guide. Just tell me what business you have and what you want the website to do. Example: 'I want a website for my travel agency just for information and to contact me'.");}text.focus();}
+  function open(){panel.classList.add('show');if(!started){started=true;el('bot',"Hi, I'm Pixie. Tell me what business you run and what you want your website to do, and I'll give you a quick price guide. Example: 'I want a website for my travel agency just for information and to contact me'.");}text.focus();}
   fab.addEventListener('click',()=>{panel.classList.contains('show')?panel.classList.remove('show'):open();});
   closeBtn.addEventListener('click',()=>panel.classList.remove('show'));
   text.addEventListener('input',()=>{text.style.height='auto';text.style.height=Math.min(text.scrollHeight,80)+'px';});
