@@ -29,7 +29,13 @@
   const fallback={projects:{"givver.ai":{name:"Givver.ai",category:"Crowdfunding platform &middot; Web app",stage:4,url:"https://givver.ai"},"the linen collection":{name:"The Linen Collection",category:"Tableware &amp; tablecloth hire &middot; Ecommerce",stage:4,url:"https://tcgemach.co.uk"}}};
   const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   let data=fallback;
-  try{const res=await fetch('/projects.json',{cache:'no-store'});if(res.ok)data=await res.json();}catch(e){}
+  try{
+    const res=await fetch('https://pixelworkdesign-admin.linencollection29.workers.dev/api/projects?v='+Date.now(),{cache:'no-store'});
+    if(res.ok)data=await res.json();
+    else throw new Error('Worker data unavailable');
+  }catch(e){
+    try{const res=await fetch('/projects.json?v='+Date.now(),{cache:'no-store'});if(res.ok)data=await res.json();}catch(err){}
+  }
   const grid=document.getElementById('workGrid');
   Object.values(data.projects||{}).filter(p=>p.url&&p.stage===4).forEach(p=>{
     const a=document.createElement('a');
