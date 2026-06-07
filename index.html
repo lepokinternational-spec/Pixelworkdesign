@@ -709,7 +709,7 @@
     <button id="chatClose" aria-label="Close">&times;</button>
   </div>
   <div class="chat-msgs" id="chatMsgs"></div>
-  <div class="chat-input"><textarea id="chatText" rows="1" placeholder="Example: I have GBP 3,000 for a travel agency site"></textarea><button id="chatSend" aria-label="Send">&uarr;</button></div>
+  <div class="chat-input"><textarea id="chatText" rows="1" placeholder="Tell Pixie your budget and website idea"></textarea><button id="chatSend" aria-label="Send">&uarr;</button></div>
   <div class="chat-foot">Budget guide only - we will confirm the real scope with you.</div>
 </div>
 
@@ -719,7 +719,7 @@
   const msgs=document.getElementById('chatMsgs'),text=document.getElementById('chatText'),send=document.getElementById('chatSend');
   let started=false,allText='';
   function el(cls,txt){const d=document.createElement('div');d.className='msg '+cls;d.textContent=txt;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
-  function open(){panel.classList.add('show');if(!started){started=true;el('bot',"Hi, I'm Pixie. Tell me your budget, what business you run, and what you want the website to do. I will tell you what we can realistically build for that price. Example: 'I have GBP 3,000 for a travel agency site for information and enquiries'.");}text.focus();}
+  function open(){panel.classList.add('show');if(!started){started=true;el('bot',"Hi, I'm Pixie. Tell me your budget, what business you run, and what you want the website to do. I will tell you what we can realistically build for that price.");}text.focus();}
   fab.addEventListener('click',()=>{panel.classList.contains('show')?panel.classList.remove('show'):open();});
   closeBtn.addEventListener('click',()=>panel.classList.remove('show'));
   text.addEventListener('input',()=>{text.style.height='auto';text.style.height=Math.min(text.scrollHeight,80)+'px';});
@@ -811,7 +811,7 @@
     if(has(/(urgent|rush|asap|fast|quick|soon)/) || (weeksWanted && weeksWanted<weeksLow)){typical=Math.round(typical*1.2);reasons.push('short deadline');}
 
     const round=n=>Math.round(n/100)*100;
-    if(!budget){return 'This sounds like: '+type+'.\n\nWhat budget would you like to stay within? For example, you could say: \"My budget is around GBP 3,000.\"\n\nOnce I know that, I can tell you what we can realistically build for that amount.';}
+    if(!budget){return 'This sounds like: '+type+'.\n\nWhat budget would you like to stay within?\n\nOnce I know that, I can tell you what we can realistically build for that amount.';}
     const scope=scopeForBudget(type,budget,typical,plainNeed);
     const timeline=weeksLow+'-'+weeksHigh+' weeks';
     const reasonText=reasons.slice(0,4).join(', ');
