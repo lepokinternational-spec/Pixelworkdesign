@@ -799,11 +799,14 @@
     try{
       const reply=await askPixie(allText);
       typing.remove();
-      el('bot',reply);
+      el('bot',shouldUseFallback(reply,allText)?estimate(allText):reply);
     }catch(err){
       typing.remove();
       el('bot',estimate(allText));
     }
+  }
+  function shouldUseFallback(reply,conversation){
+    return getBudget(conversation.toLowerCase()) && /what budget|your budget|rough budget|budget would you|how much.*budget/i.test(reply||'');
   }
   async function askPixie(message){
     const response=await fetch(CHAT_API,{
@@ -829,6 +832,11 @@
     return Math.round(n);
   }
   function formatMoney(n){const rounded=Math.round(n/100)*100;return 'GBP '+rounded.toLocaleString('en-GB');}
+  function marketRange(typical){
+    const low=Math.max(800,Math.round((typical*0.75)/100)*100);
+    const high=Math.round((typical*1.25)/100)*100;
+    return formatMoney(low)+'-'+formatMoney(high).replace('GBP ','');
+  }
   function scopeForBudget(type,budget,typical,plainNeed){
     const gap=Math.max(0,typical-budget);
     let can=[],limits=[],next='Send the details through the contact form and we can turn this into a fixed scope.';
@@ -901,7 +909,7 @@
     const timeline=weeksLow+'-'+weeksHigh+' weeks';
     const reasonText=reasons.slice(0,4).join(', ');
     const reference=exampleSite?'\nExample website mentioned: '+exampleSite+'.':'';
-    return 'This sounds like: '+type+'.'+reference+'\n\nYour budget: '+formatMoney(budget)+'\nUsual full build: about '+formatMoney(typical)+'\nEstimated time: '+timeline+'\n\n'+scope.fit+'\n\nFor '+formatMoney(budget)+', we can do:\n- '+scope.can.join('\n- ')+'\n\nNot included at this budget:\n- '+scope.limits.join('\n- ')+'\n\nWhy: '+reasonText+'.\n\n'+scope.next;
+    return 'This sounds like: '+type+'.'+reference+'\n\nMarket range for this kind of website: '+marketRange(typical)+'\nYour budget: '+formatMoney(budget)+'\nEstimated time: '+timeline+'\n\n'+scope.fit+'\n\nFor '+formatMoney(budget)+', we can do:\n- '+scope.can.join('\n- ')+'\n\nNot included at this budget:\n- '+scope.limits.join('\n- ')+'\n\nWhy it costs this: '+reasonText+'.\n\n'+scope.next;
   }
 })();
 </script>
