@@ -52,8 +52,9 @@ async function chatEstimate(request, env) {
   if (!message) {
     return json({ error: "Message is required" }, 400, request, env);
   }
+  const latest = text(payload.latest, 400);
 
-  const enrichedMessage = await enrichMessageWithExample(message);
+  const enrichedMessage = await enrichMessageWithExample(formatChatInput(message, latest));
 
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
@@ -69,6 +70,7 @@ async function chatEstimate(request, env) {
         "Your job is to help the visitor understand what kind of website they need, what similar websites usually cost, and what PixelWorksDesign can realistically do for their budget.",
         "Always use GBP.",
         "If the user gives a budget at any point, do not ask for the budget again. Move forward.",
+        "If the latest user message is only a number such as 5000, 5k, or 12000, treat that as their GBP budget for the earlier website idea.",
         "When a budget is given, estimate the normal UK small-agency market range for that kind of website, then compare the user's budget with that range.",
         "When giving a market range, keep it useful and not absurdly wide. A range such as GBP 8,000-12,000 is useful; GBP 2,000-50,000 is not.",
         "After the market range, explain what can realistically be built for the user's budget, what would be left out, and the likely timeline.",
@@ -97,6 +99,11 @@ async function chatEstimate(request, env) {
   }
 
   return json({ ok: true, reply }, 200, request, env);
+}
+
+function formatChatInput(message, latest) {
+  if (!latest) return message;
+  return `Latest user message: ${latest}\n\nFull user message history:\n${message}`;
 }
 
 async function enrichMessageWithExample(message) {

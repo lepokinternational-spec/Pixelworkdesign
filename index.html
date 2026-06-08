@@ -797,7 +797,7 @@
     el('user',t);text.value='';text.style.height='auto';allText+=' '+t;
     const typing=el('bot typing','Working it out...');
     try{
-      const reply=await askPixie(allText);
+      const reply=await askPixie(allText,t);
       typing.remove();
       el('bot',shouldUseFallback(reply,allText)?estimate(allText):reply);
     }catch(err){
@@ -806,13 +806,13 @@
     }
   }
   function shouldUseFallback(reply,conversation){
-    return getBudget(conversation.toLowerCase()) && /what budget|your budget|rough budget|budget would you|how much.*budget/i.test(reply||'');
+    return getBudget(conversation.toLowerCase()) && /(what budget|your budget|rough budget|budget would you|how much.*budget|once i know.*budget|what would you like to spend|how much would you like to spend|tell me.*budget|give me.*budget)/i.test(reply||'');
   }
-  async function askPixie(message){
+  async function askPixie(message,latest){
     const response=await fetch(CHAT_API,{
       method:'POST',
       headers:{'content-type':'application/json'},
-      body:JSON.stringify({message})
+      body:JSON.stringify({message,latest})
     });
     if(!response.ok)throw new Error('Pixie is unavailable');
     const body=await response.json();
@@ -825,6 +825,11 @@
     let m=txt.match(/(?:gbp|\u00a3)\s*([0-9][0-9,\.]*)\s*(k|thousand)?/i);
     if(!m)m=txt.match(/(?:budget|spend|available|max|maximum|up to|around|about|roughly)\D{0,18}([0-9][0-9,\.]*)\s*(k|thousand)?/i);
     if(!m)m=txt.match(/([0-9][0-9,\.]*)\s*(k|thousand)\s*(?:budget|to spend|available|for)/i);
+    if(!m)m=txt.match(/\b([1-9][0-9]{0,2})\s*(k|thousand)\b/i);
+    if(!m){
+      const nums=[...txt.matchAll(/\b([1-9][0-9]{2,5})\b/gi)];
+      if(nums.length)m=nums[nums.length-1];
+    }
     if(!m)return 0;
     let n=parseFloat(m[1].replace(/,/g,''));
     if(!Number.isFinite(n))return 0;
