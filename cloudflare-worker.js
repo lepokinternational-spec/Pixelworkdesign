@@ -74,6 +74,8 @@ async function chatEstimate(request, env) {
         "After the market range, explain what can realistically be built for the user's budget, what would be left out, and the likely timeline.",
         "If the user does not give a budget, ask for their budget before giving detailed scope. You may still identify the type of project and explain why it is simple or complex.",
         "If the user gives an example website, infer the likely features from it. If you cannot tell, ask for the budget and the example website URL.",
+        "Known example guidance: Givver.ai, CharityExtra, JustGiving, GoFundMe, Givebutter, Crowdfunder, and Donorbox are fundraising or donation platforms, not information websites.",
+        "A request like 'I want a website like givver.ai' should be treated as a crowdfunding or donation web app with campaign pages, donation/payment flow, donor records, admin tools, and possibly user accounts.",
         "For complex ideas like crowdfunding, marketplace, booking, memberships, logins, payments, dashboards, or custom platforms, say clearly that this is a custom web app and will cost more than a simple information website.",
         "Never promise a final fixed quote. Say PixelWorksDesign would confirm the final scope after reviewing the details.",
         "Keep replies under 170 words. No headings unless they make the answer clearer. Do not mention APIs, OpenAI, Cloudflare, or internal setup."

@@ -870,7 +870,7 @@
     const txt=input.toLowerCase();
     const exampleMatch=txt.match(/(?:https?:\/\/)?(?:www\.)?([a-z0-9-]+(?:\.[a-z0-9-]+)+)/);
     const exampleSite=exampleMatch?exampleMatch[1]:'';
-    const knownExample=/(charityextra|justgiving|gofundme|givebutter|crowdfunder|donorbox|kickstarter|shopify|etsy|amazon|airbnb|booking\.com|rightmove|zoopla)/.test(txt);
+    const knownExample=/(givver|givver\.ai|charityextra|justgiving|gofundme|givebutter|crowdfunder|donorbox|kickstarter|shopify|etsy|amazon|airbnb|booking\.com|rightmove|zoopla)/.test(txt);
     const knownType=/(website|site|business|company|salon|restaurant|cafe|travel|agency|charity|nonprofit|fundrais|crowdfund|donat|campaign|shop|store|ecommerce|sell|booking|appointment|calendar|quote|form|gallery|portfolio|trade|plumber|electrician|builder|estate|property|clinic|gym|account|login|portal|app|system)/.test(txt) || knownExample;
     const pageCount=numberBefore(/(\d+)\s*(pages?|screens?|sections?)/);
     const productCount=numberBefore(/(\d+)\s*(products?|items?|skus?)/);
@@ -885,7 +885,7 @@
     if(missing.length>=2 || vagueRequest){return 'I need a little more detail to give a useful guide.\n\nPlease tell me:\n1. Your rough budget.\n2. What business you run.\n3. What customers should do on the website. Examples: book, buy, donate, ask for a quote, view prices, see photos.\n4. If it is easier, paste a website that is similar to what you want.';}
 
     let type='Information website',typical=2500,weeksLow=2,weeksHigh=4,plainNeed='a clear website with information about your business, your services, photos if needed, and a way for people to contact you',reasons=['simple information and contact website'];
-    if(has(/(charityextra|justgiving|gofundme|givebutter|crowdfunder|donorbox|crowdfund|fundrais|donat|charity|nonprofit|campaign|pledge|sponsor)/)){type='Crowdfunding / donation platform';typical=28500;weeksLow=12;weeksHigh=16;plainNeed='a platform where people can create or view fundraising pages, donate securely, track donations, send receipts, and manage campaigns';reasons=['campaign pages, secure donations, donor records, and admin tools'];}
+    if(has(/(givver|givver\.ai|charityextra|justgiving|gofundme|givebutter|crowdfunder|donorbox|crowdfund|fundrais|donat|charity|nonprofit|campaign|pledge|sponsor)/)){type='Crowdfunding / donation platform';typical=28500;weeksLow=12;weeksHigh=16;plainNeed='a platform where people can create or view fundraising pages, donate securely, track donations, send receipts, and manage campaigns';reasons=['campaign pages, secure donations, donor records, and admin tools'];}
     else if(has(/(ecommerce|e-commerce|online shop|shop|store|sell|checkout|cart|products?|subscription|payment|stripe|paypal)/)){type='Online shop';typical=7500;weeksLow=5;weeksHigh=7;plainNeed='an online shop where customers can view products, add them to a basket, pay online, and receive order emails';reasons=['products, basket, payments, and order testing'];}
     else if(has(/(booking|appointment|reservation|calendar|table|class|session)/)){type='Booking website';typical=5500;weeksLow=4;weeksHigh=6;plainNeed='a website where customers can see your services and request or make bookings';reasons=['booking flow, customer details, and confirmation messages'];}
     else if(has(/(listing|directory|marketplace|recruit|job|vacanc|property|estate|search|filter)/)){type='Listing website';typical=9500;weeksLow=7;weeksHigh=10;plainNeed='a website with searchable listings, detail pages, and enquiry forms';reasons=['search, filters, listing pages, and enquiries'];}
@@ -904,7 +904,10 @@
     if(has(/(urgent|rush|asap|fast|quick|soon)/) || (weeksWanted && weeksWanted<weeksLow)){typical=Math.round(typical*1.2);reasons.push('short deadline');}
 
     const round=n=>Math.round(n/100)*100;
-    if(!budget){return 'This sounds like: '+type+'.\n\nWhat budget would you like to stay within?\n\nOnce I know that, I can tell you what we can realistically build for that amount.';}
+    if(!budget){
+      const reference=exampleSite?'\nExample website mentioned: '+exampleSite+'.':'';
+      return 'This sounds like: '+type+'.'+reference+'\n\nMarket range for this kind of website: '+marketRange(typical)+'\nEstimated time: '+weeksLow+'-'+weeksHigh+' weeks\n\nIn plain English: '+plainNeed+'.\n\nTo tell you what PixelWorksDesign can realistically build as a first version, what budget would you like to stay within?';
+    }
     const scope=scopeForBudget(type,budget,typical,plainNeed);
     const timeline=weeksLow+'-'+weeksHigh+' weeks';
     const reasonText=reasons.slice(0,4).join(', ');
