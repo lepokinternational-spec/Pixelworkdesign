@@ -106,28 +106,44 @@
   /* ADMIN */
   .admin-link{color:var(--faint);transition:color .3s;cursor:pointer}
   .admin-link:hover{color:var(--accent2)}
-  .modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(5,5,12,.72);backdrop-filter:blur(6px)}
+  .modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(5,5,12,.78);backdrop-filter:blur(10px)}
   .modal.show{display:flex}
-  .modal-card{width:100%;max-width:560px;max-height:90vh;overflow:auto;background:#13131F;border:1px solid rgba(255,255,255,.13);border-radius:16px;padding:30px}
-  .modal-head{display:flex;justify-content:space-between;align-items:center}
-  .modal-head h3{font-family:'Hanken Grotesk';font-weight:600;font-size:20px}
-  .modal-close{background:none;border:none;color:var(--muted);font-size:24px;cursor:pointer;line-height:1}
-  .modal-sub{color:var(--muted);font-size:13.5px;margin:6px 0 22px;line-height:1.5}
+  .modal-card{width:100%;max-width:920px;max-height:90vh;overflow:auto;background:linear-gradient(160deg,#181827,#10101B 58%,#0B0B14);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:0;box-shadow:0 30px 90px rgba(0,0,0,.56)}
+  .modal-head{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:22px 24px;border-bottom:1px solid rgba(255,255,255,.1);background:rgba(18,18,30,.92);backdrop-filter:blur(10px)}
+  .modal-head h3{font-family:'Hanken Grotesk';font-weight:700;font-size:24px;letter-spacing:-.02em}
+  .modal-close{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:999px;color:var(--fg);font-size:13px;font-weight:700;cursor:pointer;line-height:1;padding:10px 16px}
+  .modal-close:hover{border-color:var(--accent2);color:var(--accent2)}
+  .modal-sub{color:var(--muted);font-size:14px;margin:7px 0 22px;line-height:1.55}
+  .admin-shell{padding:24px}
+  .admin-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(290px,.8fr);gap:18px;align-items:start}
+  .admin-section{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:20px}
+  .admin-section h4{font-family:'Hanken Grotesk';font-size:17px;font-weight:700;margin-bottom:4px}
   .admin-field{margin-bottom:16px}
-  .admin-field label{display:block;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#B7B7C6;margin-bottom:8px}
-  .admin-field input,.admin-field select,.admin-field textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.17);border-radius:9px;padding:11px 12px;font-family:'Hanken Grotesk';font-size:15px;color:var(--fg)}
-  .admin-field input:focus,.admin-field select:focus,.admin-field textarea:focus{outline:none;border-color:var(--accent2)}
+  .admin-field label{display:block;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#C7C7D8;margin-bottom:8px}
+  .admin-field input,.admin-field select,.admin-field textarea{width:100%;background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.16);border-radius:11px;padding:12px 13px;font-family:'Hanken Grotesk';font-size:15px;color:var(--fg);transition:border-color .25s,background .25s,box-shadow .25s}
+  .admin-field input:focus,.admin-field select:focus,.admin-field textarea:focus{outline:none;border-color:var(--accent2);background:rgba(255,255,255,.09);box-shadow:0 0 0 3px rgba(46,168,255,.17)}
   .admin-field select option{background:#13131F}
-  .admin-save{width:100%;background:var(--grad);color:#fff;border:none;border-radius:30px;padding:14px;font-family:'Hanken Grotesk';font-weight:600;font-size:15px;cursor:pointer;transition:filter .3s}
-  .admin-save:hover{filter:brightness(1.12)}
-  .admin-list{margin-top:24px;border-top:1px solid var(--line);padding-top:18px}
-  .admin-list h4{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
-  .adm-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07)}
-  .adm-item .nm{font-size:14px;font-weight:500}
-  .adm-item .stg{font-size:12px;color:var(--accent2);font-family:'JetBrains Mono',monospace;margin-top:2px}
-  .adm-item button{background:none;border:1px solid rgba(255,255,255,.2);color:var(--muted);border-radius:20px;padding:5px 11px;font-size:11px;cursor:pointer;transition:.25s}
-  .adm-item button:hover{border-color:var(--accent);color:var(--accent)}
+  .admin-hint{color:var(--faint);font-size:12.5px;line-height:1.45;margin-top:8px}
+  .service-picks{display:flex;flex-wrap:wrap;gap:9px}
+  .service-pick{border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.055);color:#D7D7E8;padding:9px 12px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+  .service-pick.active{border-color:transparent;background:var(--grad);color:#fff;box-shadow:0 8px 22px rgba(124,58,237,.22)}
+  .admin-save{width:100%;background:var(--grad);color:#fff;border:none;border-radius:999px;padding:14px 18px;font-family:'Hanken Grotesk';font-weight:700;font-size:15px;cursor:pointer;transition:filter .3s,transform .3s}
+  .admin-save:hover{filter:brightness(1.12);transform:translateY(-1px)}
+  .admin-save:disabled{cursor:not-allowed;opacity:.72;transform:none}
+  .admin-status{min-height:20px;color:#B8B8CE;font-size:13.5px;line-height:1.45;margin-top:14px}
+  .admin-list{margin-top:0}
+  .admin-list h4{font-family:'Hanken Grotesk';font-size:17px;font-weight:700;margin-bottom:14px}
+  .adm-item{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+  .adm-item:first-child{padding-top:0}
+  .adm-item .nm{font-size:15px;font-weight:700}
+  .adm-item .stg{font-size:12px;color:var(--accent2);font-family:'JetBrains Mono',monospace;margin-top:4px}
+  .adm-item .cat{font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.35}
+  .adm-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  .adm-item button{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.17);color:#D4D4E6;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;transition:.25s}
+  .adm-item button:hover{border-color:var(--accent2);color:var(--accent2)}
+  .adm-item button.danger:hover{border-color:var(--accent);color:var(--accent)}
   .gate-note{font-size:12px;color:var(--faint);margin-top:14px;line-height:1.55}
+  @media (max-width:820px){.admin-grid{grid-template-columns:1fr}.modal-card{max-width:620px}.admin-shell{padding:18px}.modal-head{padding:18px}}
 
   /* AI ESTIMATE CHAT */
   .chat-fab{position:fixed;right:24px;bottom:24px;z-index:900;width:60px;height:60px;border-radius:50%;background:var(--grad);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 12px 30px rgba(124,58,237,.4);transition:transform .3s,filter .3s}
@@ -510,28 +526,49 @@
 </script>
 <div class="modal" id="adminModal" aria-hidden="true">
   <div class="modal-card">
-    <div class="modal-head"><h3>Admin</h3><button class="modal-close" id="adminClose" aria-label="Close">&times;</button></div>
-    <div id="gateView">
+    <div class="modal-head"><h3>PixelWorksDesign Admin</h3><button class="modal-close" id="adminClose" aria-label="Close">Close</button></div>
+    <div class="admin-shell" id="gateView">
       <div class="modal-sub">Enter the admin passcode to manage projects.</div>
       <div class="admin-field"><label>Passcode</label><input id="gateInput" type="password" placeholder="Passcode"></div>
       <button class="admin-save" id="gateBtn">Unlock</button>
       <div class="gate-note">Enter your private admin passcode. Changes are sent to the secure API and committed to the GitHub repo as <b style="color:var(--fg)">projects.json</b>.</div>
     </div>
-    <div id="adminView" style="display:none">
-      <div class="modal-sub">Edit your public contact details, and add or update projects clients can track.</div>
-      <div class="admin-field"><label>Email</label><input id="dEmail" placeholder="pixlworkdesign@gmail.com"></div>
-      <div class="admin-field"><label>Phone (optional)</label><input id="dPhone" placeholder="+44 ..."></div>
-      <div class="admin-field"><label>Based in (optional)</label><input id="dCity" placeholder="London, UK"></div>
-      <button class="admin-save" id="dSave">Save details</button>
-      <div class="admin-sec-div"></div>
-      <div class="admin-field"><label>Project name</label><input id="pName" placeholder="e.g. Acme Co."></div>
-      <div class="admin-field"><label>Live URL (optional)</label><input id="pUrl" placeholder="https://example.com"></div>
-      <div class="admin-field"><label>Category / description</label><input id="pCategory" placeholder="Web app &middot; Ecommerce"></div>
-      <div class="admin-field"><label>Current stage</label><select id="pStage"><option value="1">Discover</option><option value="2">Design</option><option value="3">Build</option><option value="4">Launch</option></select></div>
-      <div class="admin-field"><label>Note for the client (optional)</label><textarea id="pNote" rows="2" placeholder="e.g. Homepage design is ready for your review."></textarea></div>
-      <button class="admin-save" id="pSave">Save project</button>
-      <div class="modal-sub" id="adminStatus" style="margin-top:14px"></div>
-      <div class="admin-list"><h4>Current projects</h4><div id="admList"></div></div>
+    <div class="admin-shell" id="adminView" style="display:none">
+      <div class="modal-sub">Update public details, add projects, choose services, and save everything to the live website data.</div>
+      <div class="admin-grid">
+        <div>
+          <div class="admin-section">
+            <h4>Contact details</h4>
+            <div class="modal-sub">These appear on the public contact section.</div>
+            <div class="admin-field"><label>Email</label><input id="dEmail" placeholder="pixlworkdesign@gmail.com"></div>
+            <div class="admin-field"><label>Phone (optional)</label><input id="dPhone" placeholder="+44 ..."></div>
+            <div class="admin-field"><label>Based in (optional)</label><input id="dCity" placeholder="London, UK"></div>
+            <button class="admin-save" id="dSave">Save details</button>
+          </div>
+
+          <div class="admin-section" style="margin-top:18px">
+            <h4>Project</h4>
+            <div class="modal-sub">Add a new project or edit one from the list.</div>
+            <div class="admin-field"><label>Project name</label><input id="pName" placeholder="e.g. Acme Co."></div>
+            <div class="admin-field"><label>Live URL (optional)</label><input id="pUrl" placeholder="https://example.com"></div>
+            <div class="admin-field">
+              <label>Services</label>
+              <div class="service-picks" id="servicePicks"></div>
+              <input id="pCategory" type="hidden">
+              <div class="admin-hint">Select one or more. If you leave this empty, the site will create a description from the project name or URL.</div>
+            </div>
+            <div class="admin-field"><label>Current stage</label><select id="pStage"><option value="1">Discover</option><option value="2">Design</option><option value="3">Build</option><option value="4">Launch</option></select></div>
+            <div class="admin-field"><label>Note for the client (optional)</label><textarea id="pNote" rows="2" placeholder="e.g. Homepage design is ready for your review."></textarea></div>
+            <button class="admin-save" id="pSave">Save project</button>
+            <div class="admin-status" id="adminStatus"></div>
+          </div>
+        </div>
+
+        <div class="admin-section admin-list">
+          <h4>Current projects</h4>
+          <div id="admList"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -539,6 +576,7 @@
 <script>
 (async function(){
   const STAGES=["Discover","Design","Build","Launch"];
+  const SERVICE_OPTIONS=["Brochure website","Ecommerce","Subscription","Listing website","Recruitment","Custom development","Care & maintenance"];
   const DATA_URL='https://pixelworkdesign-admin.linencollection29.workers.dev/api/projects';
   const FALLBACK_DATA_URL='projects.json';
   const ADMIN_API='https://pixelworkdesign-admin.linencollection29.workers.dev/api/projects';
@@ -560,6 +598,7 @@
   function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
   function displayName(key,p){return (p&&p.name)||titleCase(key);}
   function displayCategory(key,p){
+    if(p&&Array.isArray(p.services)&&p.services.length)return p.services.join(' \u00b7 ');
     if(p&&p.category)return p.category;
     if(p&&p.url){try{return new URL(p.url).hostname.replace(/^www\./,'');}catch(e){}}
     return key;
@@ -585,7 +624,8 @@
       const p=source[k]||{};
       const name=(p.name||k||'').trim();
       if(!name)return;
-      next.projects[norm(name)]={name,category:p.category||'',stage:Math.min(4,Math.max(1,parseInt(p.stage||1,10))),note:p.note||'',updated:p.updated||'',url:p.url||''};
+      const services=Array.isArray(p.services)?p.services.filter(Boolean):[];
+      next.projects[norm(name)]={name,category:p.category||'',services,stage:Math.min(4,Math.max(1,parseInt(p.stage||1,10))),note:p.note||'',updated:p.updated||'',url:p.url||''};
     });
     return next;
   }
@@ -668,13 +708,35 @@
   });
   function fillDetails(){document.getElementById('dEmail').value=details.email||'';document.getElementById('dPhone').value=details.phone||'';document.getElementById('dCity').value=details.city||'';}
   function payload(){return {details,projects};}
-  const pNameInput=document.getElementById('pName'),pUrlInput=document.getElementById('pUrl'),pCategoryInput=document.getElementById('pCategory');
+  const pNameInput=document.getElementById('pName'),pUrlInput=document.getElementById('pUrl'),pCategoryInput=document.getElementById('pCategory'),servicePicks=document.getElementById('servicePicks');
   const pStageInput=document.getElementById('pStage'),pNoteInput=document.getElementById('pNote'),pSaveBtn=document.getElementById('pSave');
+  function getSelectedServices(){
+    if(!servicePicks)return [];
+    return Array.from(servicePicks.querySelectorAll('.service-pick.active')).map(btn=>btn.dataset.service);
+  }
+  function setSelectedServices(services){
+    const chosen=new Set(services||[]);
+    if(!servicePicks)return;
+    servicePicks.querySelectorAll('.service-pick').forEach(btn=>btn.classList.toggle('active',chosen.has(btn.dataset.service)));
+    pCategoryInput.value=getSelectedServices().join(' \u00b7 ');
+  }
+  function renderServicePicks(){
+    if(!servicePicks)return;
+    servicePicks.innerHTML='';
+    SERVICE_OPTIONS.forEach(service=>{
+      const btn=document.createElement('button');
+      btn.type='button';btn.className='service-pick';btn.dataset.service=service;btn.textContent=service;
+      btn.addEventListener('click',()=>{btn.classList.toggle('active');pCategoryInput.value=getSelectedServices().join(' \u00b7 ');});
+      servicePicks.appendChild(btn);
+    });
+  }
   function syncAutoCategory(){
     if(!pCategoryInput)return;
+    if(getSelectedServices().length){pCategoryInput.value=getSelectedServices().join(' \u00b7 ');return;}
     const generated=inferCategory(pNameInput.value,pUrlInput.value);
     if(!pCategoryInput.value.trim()||pCategoryInput.dataset.auto==='1'){pCategoryInput.value=generated;pCategoryInput.dataset.auto='1';}
   }
+  renderServicePicks();
   pNameInput.addEventListener('input',syncAutoCategory);
   pUrlInput.addEventListener('input',syncAutoCategory);
   pCategoryInput.addEventListener('input',()=>{pCategoryInput.dataset.auto='0';});
@@ -684,6 +746,7 @@
     pUrlInput.value='';
     pCategoryInput.value='';
     pCategoryInput.dataset.auto='';
+    setSelectedServices([]);
     pNoteInput.value='';
     pStageInput.value='1';
     pSaveBtn.textContent='Save project';
@@ -693,8 +756,9 @@
     editingProjectKey=key;
     pNameInput.value=p.name||displayName(key,p);
     pUrlInput.value=p.url||'';
-    pCategoryInput.value=p.category||inferCategory(pNameInput.value,pUrlInput.value);
-    pCategoryInput.dataset.auto=p.category?'0':'1';
+    setSelectedServices(p.services||[]);
+    pCategoryInput.value=getSelectedServices().join(' \u00b7 ')||p.category||inferCategory(pNameInput.value,pUrlInput.value);
+    pCategoryInput.dataset.auto=(p.category||getSelectedServices().length)?'0':'1';
     pStageInput.value=String(p.stage||1);
     pNoteInput.value=p.note||'';
     pSaveBtn.textContent='Update project';
@@ -738,11 +802,12 @@
   document.getElementById('pSave').addEventListener('click',async()=>{
     const name=document.getElementById('pName').value.trim();if(!name)return;
     const url=document.getElementById('pUrl').value.trim();
-    const category=document.getElementById('pCategory').value.trim()||inferCategory(name,url);
+    const services=getSelectedServices();
+    const category=services.join(' \u00b7 ')||document.getElementById('pCategory').value.trim()||inferCategory(name,url);
     const oldKey=editingProjectKey;
     const oldProject=oldKey?projects[oldKey]:null;
     if(editingProjectKey&&editingProjectKey!==norm(name))delete projects[editingProjectKey];
-    projects[norm(name)]={name,category,stage:parseInt(document.getElementById('pStage').value,10),note:document.getElementById('pNote').value.trim(),url,updated:today()};
+    projects[norm(name)]={name,category,services,stage:parseInt(document.getElementById('pStage').value,10),note:document.getElementById('pNote').value.trim(),url,updated:today()};
     renderAdmin();renderWork();
     const saved=await saveToRepo(document.getElementById('pSave'),editingProjectKey?'Project updated.':'Project saved.');
     if(saved)clearProjectForm();
@@ -755,12 +820,12 @@
     keys.forEach(k=>{
       const p=projects[k];
       const row=document.createElement('div');row.className='adm-item';
-      row.innerHTML='<div><div class="nm">'+esc(displayName(k,p))+'</div><div class="stg">'+STAGES[(p.stage||1)-1]+'</div></div>';
+      row.innerHTML='<div><div class="nm">'+esc(displayName(k,p))+'</div><div class="stg">'+STAGES[(p.stage||1)-1]+'</div><div class="cat">'+esc(displayCategory(k,p))+'</div></div>';
       const editBtn=document.createElement('button');editBtn.textContent='Edit';
       editBtn.addEventListener('click',()=>editProject(k));
-      const btn=document.createElement('button');btn.textContent='Remove';
+      const btn=document.createElement('button');btn.className='danger';btn.textContent='Remove';
       btn.addEventListener('click',async()=>{const removed=projects[k];delete projects[k];if(editingProjectKey===k)clearProjectForm();renderAdmin();renderWork();const saved=await saveToRepo(btn,'Project removed.');if(!saved){projects[k]=removed;renderAdmin();renderWork();}});
-      const actions=document.createElement('div');actions.style.display='flex';actions.style.gap='8px';actions.appendChild(editBtn);actions.appendChild(btn);
+      const actions=document.createElement('div');actions.className='adm-actions';actions.appendChild(editBtn);actions.appendChild(btn);
       row.appendChild(actions);list.appendChild(row);
     });
   }
