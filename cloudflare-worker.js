@@ -227,7 +227,7 @@ function sanitizePayload(payload) {
     ok: true,
     data: {
       details: {
-        email: text(details.email, 120) || "info@pixelworkdesign.com",
+        email: text(details.email, 120) || "pixlworkdesign@gmail.com",
         phone: text(details.phone, 60),
         city: text(details.city, 80)
       },
