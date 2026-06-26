@@ -7,51 +7,59 @@
   "projects": {
     "givver.ai": {
       "name": "Givver.ai",
-      "category": "Crowdfunding platform · Web app",
+      "category": "Custom development · Care & maintenance · Brochure website",
       "stage": 4,
       "note": "Launched and live.",
-      "updated": "7 Jun 2026",
+      "updated": "26 Jun 2026",
       "url": "https://givver.ai/"
     },
     "the linen collection": {
       "name": "The Linen Collection",
-      "category": "Tableware & tablecloth hire · Ecommerce",
+      "category": "Ecommerce",
       "stage": 4,
       "note": "Launched and live.",
-      "updated": "7 Jun 2026",
+      "updated": "26 Jun 2026",
       "url": "https://tcgemach.co.uk/"
     },
     "brighthaven childrens services": {
       "name": "Brighthaven Childrens Services",
-      "category": "Informative",
+      "category": "Brochure website",
       "stage": 4,
       "note": "",
-      "updated": "8 Jun 2026",
+      "updated": "26 Jun 2026",
       "url": "https://brighthavenservices.co.uk/"
     },
     "jlm collective": {
       "name": "JLM Collective",
-      "category": "Booking site",
+      "category": "Ecommerce · Listing website",
       "stage": 4,
       "note": "",
-      "updated": "8 Jun 2026",
+      "updated": "26 Jun 2026",
       "url": "https://www.jlmcollective.co/"
     },
     "sleek travel": {
       "name": "Sleek Travel",
-      "category": "Informative",
+      "category": "Brochure website",
       "stage": 4,
       "note": "",
-      "updated": "8 Jun 2026",
+      "updated": "26 Jun 2026",
       "url": "https://www.sleektravel.co/"
     },
     "venza care": {
       "name": "Venza Care",
-      "category": "Brochure website · Listing website · Recruitment",
-      "stage": 2,
+      "category": "Recruitment · Brochure website · Listing website",
+      "stage": 3,
       "note": "",
       "updated": "26 Jun 2026",
       "url": "https://venzacare-b71c-gijs918fn-pixelwork-design.vercel.app/"
+    },
+    "pixelwork design": {
+      "name": "Pixelwork Design",
+      "category": "Care & maintenance · Brochure website",
+      "stage": 4,
+      "note": "",
+      "updated": "26 Jun 2026",
+      "url": ""
     }
   }
 }
