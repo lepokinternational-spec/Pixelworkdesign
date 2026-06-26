@@ -667,10 +667,11 @@
     workCards.innerHTML='';
     Object.keys(projects).forEach(k=>{
       const p=projects[k];
-      if(!p.url||p.stage!==4)return;
+      if(!p.url)return;
+      const stageLabel=STAGES[(p.stage||1)-1]||'Live';
       const a=document.createElement('a');
       a.href=p.url;a.target='_blank';a.rel='noopener';a.className='wcard rv in';
-      a.innerHTML='<div class="shot"><img loading="lazy" alt="Screenshot of '+esc(displayName(k,p))+'" src="https://s.wordpress.com/mshots/v1/'+encodeURIComponent(p.url)+'?w=1200&h=750"></div><span class="badge"><span class="d"></span>Live</span><div class="meta"><div><h3>'+esc(displayName(k,p))+'</h3><div class="c">'+esc(displayCategory(k,p))+'</div></div><span class="go">\u2197</span></div>';
+      a.innerHTML='<div class="shot"><img loading="lazy" alt="Screenshot of '+esc(displayName(k,p))+'" src="https://s.wordpress.com/mshots/v1/'+encodeURIComponent(p.url)+'?w=1200&h=750"></div><span class="badge"><span class="d"></span>'+esc(stageLabel)+'</span><div class="meta"><div><h3>'+esc(displayName(k,p))+'</h3><div class="c">'+esc(displayCategory(k,p))+'</div></div><span class="go">\u2197</span></div>';
       workCards.appendChild(a);
     });
   }
