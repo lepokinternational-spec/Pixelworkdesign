@@ -20,6 +20,14 @@ export default {
       return json({ error: "Method not allowed" }, 405, request, env);
     }
 
+    if (url.pathname === "/api/admin-check") {
+      if (request.method === "POST") {
+        return checkAdminPasscode(request, env);
+      }
+
+      return json({ error: "Method not allowed" }, 405, request, env);
+    }
+
     if (url.pathname !== "/api/projects") {
       return json({ error: "Not found" }, 404, request, env);
     }
@@ -152,6 +160,15 @@ async function readProjects(request, env) {
       "cache-control": "no-store"
     }
   });
+}
+
+async function checkAdminPasscode(request, env) {
+  const token = getBearerToken(request);
+  if (!env.ADMIN_PASSCODE || token !== env.ADMIN_PASSCODE) {
+    return json({ error: "Unauthorized" }, 401, request, env);
+  }
+
+  return json({ ok: true }, 200, request, env);
 }
 
 async function writeProjects(request, env) {
