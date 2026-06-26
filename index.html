@@ -293,6 +293,9 @@
   .formcard{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.11);border-radius:16px;padding:30px 28px}
   .form-title{font-family:'Hanken Grotesk';font-weight:600;font-size:19px;letter-spacing:-.01em;color:var(--fg)}
   .form-sub{color:var(--muted);font-size:13.5px;margin-top:5px;margin-bottom:24px}
+  .form-status{min-height:20px;margin-top:12px;color:var(--muted);font-size:13.5px;line-height:1.45}
+  .form-status.ok{color:#8BE9C9}
+  .form-status.err{color:#FF8BA7}
   form .field{margin-bottom:20px}
   form label{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#B7B7C6;margin-bottom:9px}
   form input,form textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.17);border-radius:10px;padding:13px 14px;font-family:'Hanken Grotesk';font-size:16px;color:var(--fg);transition:border-color .25s,background .25s,box-shadow .25s}
@@ -507,6 +510,7 @@
           <div class="field"><label>Email</label><input type="email" name="email" placeholder="jane@company.com" required></div>
           <div class="field"><label>Message</label><textarea name="msg" rows="4" placeholder="How can we help?" required></textarea></div>
           <button type="submit" class="send" id="sendBtn">Send message ↗</button>
+          <div class="form-status" id="contactStatus"></div>
         </form>
       </div>
     </section>
@@ -529,19 +533,32 @@
 
 
   document.querySelectorAll('#budget .chip').forEach(c=>c.addEventListener('click',()=>{document.querySelectorAll('#budget .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');}));
-  function send(e){
+  const CONTACT_API='https://pixelworkdesign-admin.linencollection29.workers.dev/api/contact';
+  async function send(e){
     e.preventDefault();
     const form=e.target;
     const b=document.getElementById('sendBtn');
+    const status=document.getElementById('contactStatus');
     const name=(form.elements.name.value||'').trim();
     const email=(form.elements.email.value||'').trim();
     const msg=(form.elements.msg.value||'').trim();
     const budget=document.querySelector('#budget .chip.on')?.textContent.trim()||'Not selected';
-    const subject=encodeURIComponent('Website enquiry from '+(name||'PixelWorksDesign site'));
-    const body=encodeURIComponent('Name: '+name+'\nEmail: '+email+'\nBudget: '+budget+'\n\nMessage:\n'+msg);
-    window.location.href='mailto:pixlworkdesign@gmail.com?subject='+subject+'&body='+body;
-    b.textContent='Opening email ✓';
-    setTimeout(()=>{form.reset();document.querySelectorAll('#budget .chip').forEach(x=>x.classList.remove('on'));b.textContent='Send enquiry ↗';},1800);
+    b.disabled=true;b.textContent='Sending...';
+    if(status){status.className='form-status';status.textContent='Sending your message...';}
+    try{
+      const res=await fetch(CONTACT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,message:msg,budget})});
+      if(!res.ok){
+        let message='Message could not be sent. Please email pixlworkdesign@gmail.com.';
+        try{const body=await res.json();if(body.error)message=body.error;}catch(err){}
+        throw new Error(message);
+      }
+      if(status){status.className='form-status ok';status.textContent='Message sent. We will reply by email as soon as we can.';}
+      form.reset();document.querySelectorAll('#budget .chip').forEach(x=>x.classList.remove('on'));
+    }catch(err){
+      if(status){status.className='form-status err';status.textContent=err.message||'Message could not be sent. Please email pixlworkdesign@gmail.com.';}
+    }finally{
+      b.disabled=false;b.textContent='Send message';
+    }
   }
 </script>
 <div class="modal" id="adminModal" aria-hidden="true">

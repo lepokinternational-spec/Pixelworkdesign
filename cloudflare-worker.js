@@ -20,6 +20,14 @@ export default {
       return json({ error: "Method not allowed" }, 405, request, env);
     }
 
+    if (url.pathname === "/api/contact") {
+      if (request.method === "POST") {
+        return sendContactEmail(request, env);
+      }
+
+      return json({ error: "Method not allowed" }, 405, request, env);
+    }
+
     if (url.pathname === "/api/admin-check") {
       if (request.method === "POST") {
         return checkAdminPasscode(request, env);
@@ -43,6 +51,66 @@ export default {
     return json({ error: "Method not allowed" }, 405, request, env);
   }
 };
+
+async function sendContactEmail(request, env) {
+  if (!env.RESEND_API_KEY) {
+    return json({ error: "Email sending is not configured" }, 500, request, env);
+  }
+
+  let payload;
+  try {
+    payload = await request.json();
+  } catch {
+    return json({ error: "Invalid JSON" }, 400, request, env);
+  }
+
+  const name = text(payload.name, 100);
+  const email = text(payload.email, 160);
+  const message = text(payload.message, 3000);
+  const budget = text(payload.budget, 80) || "Not selected";
+
+  if (!name || !email || !message) {
+    return json({ error: "Name, email, and message are required" }, 400, request, env);
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return json({ error: "Enter a valid email address" }, 400, request, env);
+  }
+
+  const to = env.CONTACT_TO || "pixlworkdesign@gmail.com";
+  const from = env.CONTACT_FROM || "PixelWorksDesign <onboarding@resend.dev>";
+  const subject = `Website enquiry from ${name}`;
+  const body = [
+    `Name: ${name}`,
+    `Email: ${email}`,
+    `Budget: ${budget}`,
+    "",
+    "Message:",
+    message
+  ].join("\n");
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "authorization": `Bearer ${env.RESEND_API_KEY}`,
+      "content-type": "application/json"
+    },
+    body: JSON.stringify({
+      from,
+      to: [to],
+      subject,
+      text: body,
+      reply_to: email
+    })
+  });
+
+  if (!response.ok) {
+    const detail = await response.text();
+    return json({ error: "Email send failed", detail: text(detail, 1000) }, response.status, request, env);
+  }
+
+  return json({ ok: true }, 200, request, env);
+}
 
 async function chatEstimate(request, env) {
   if (!env.OPENAI_API_KEY) {
