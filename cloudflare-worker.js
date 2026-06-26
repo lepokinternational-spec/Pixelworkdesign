@@ -230,9 +230,13 @@ function sanitizePayload(payload) {
     const name = text(rawProject.name || rawKey, 80);
     if (!name) continue;
     const key = normalizeKey(name);
+    const services = Array.isArray(rawProject.services)
+      ? rawProject.services.map((item) => text(item, 80)).filter(Boolean).slice(0, 8)
+      : [];
     cleanProjects[key] = {
       name,
       category: text(rawProject.category, 120),
+      services,
       stage: clampStage(rawProject.stage),
       note: text(rawProject.note, 220),
       updated: text(rawProject.updated, 40),

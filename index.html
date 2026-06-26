@@ -256,6 +256,13 @@
   .offer .lab .lab-d{display:block;margin-top:9px;font-size:12.5px;line-height:1.45;color:rgba(255,255,255,.82)}
   .offer .go2{position:absolute;top:20px;right:20px;color:#fff;opacity:0;transform:translate(-5px,5px);transition:.4s;z-index:2;font-size:18px}
   .offer:hover .go2{opacity:1;transform:none}
+  .offer.active{border-color:rgba(46,168,255,.72);box-shadow:0 0 0 3px rgba(46,168,255,.15)}
+  .work-filter{margin:-42px 0 34px;color:var(--muted);font-size:14px;display:none;align-items:center;gap:12px;flex-wrap:wrap}
+  .work-filter.show{display:flex}
+  .work-filter b{color:var(--fg);font-weight:700}
+  .work-filter button{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:var(--fg);border-radius:999px;padding:7px 12px;font-family:'Hanken Grotesk';font-size:12px;font-weight:700;cursor:pointer}
+  .work-filter button:hover{border-color:var(--accent2);color:var(--accent2)}
+  .work-empty{grid-column:1/-1;color:var(--muted);font-size:15px;line-height:1.55;border:1px solid var(--line);border-radius:10px;padding:20px;background:rgba(255,255,255,.035)}
   .cap-strip{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:34px;color:var(--muted);font-size:14px;align-items:center;justify-content:center}
   .cap-strip .k{color:var(--faint)}
   .cap-strip b{color:var(--fg);font-weight:500}
@@ -381,6 +388,7 @@
     <!-- WORK -->
     <section class="sec light" id="work">
       <div class="sec-top"><span class="num mono grad">01</span><h2>Selected Work</h2></div>
+      <div class="work-filter" id="workFilter">Showing <b id="workFilterName"></b> projects <button id="workFilterClear" type="button">Show all</button></div>
       <div class="work-cards" id="workCards">
         <a href="https://givver.ai" target="_blank" rel="noopener" class="wcard rv">
           <div class="shot"><img loading="lazy" alt="Screenshot of the Givver.ai website" src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Fgivver.ai?w=1200&amp;h=750"></div>
@@ -401,7 +409,7 @@
       <!-- Each card links to #contact for now. Swap the abstract art for a real project photo when you have one. -->
       <div class="offer-grid">
 
-        <a href="#contact" class="offer rv">
+        <a href="#work" class="offer rv" data-service="Brochure website">
           <div class="art" style="background:linear-gradient(160deg,#2EA8FF,#1564c9)">
             <svg viewBox="0 0 300 380" preserveAspectRatio="xMidYMid slice"><g stroke="#FFFFFF" stroke-opacity=".5" fill="none" stroke-width="1.6"><rect x="58" y="80" width="184" height="150" rx="6"/><line x1="58" y1="108" x2="242" y2="108"/><circle cx="72" cy="94" r="3"/><circle cx="84" cy="94" r="3"/><line x1="80" y1="140" x2="220" y2="140"/><line x1="80" y1="162" x2="196" y2="162"/><line x1="80" y1="184" x2="210" y2="184"/></g></svg>
           </div>
@@ -411,7 +419,7 @@
           <div class="lab"><span class="lab-t">Brochure Website Design</span><span class="lab-d">A polished, professional site to present your business and what you do.</span></div>
         </a>
 
-        <a href="#contact" class="offer rv">
+        <a href="#work" class="offer rv" data-service="Ecommerce">
           <div class="art" style="background:linear-gradient(160deg,#FF2E9A,#b51e8f)">
             <svg viewBox="0 0 300 380" preserveAspectRatio="xMidYMid slice"><g stroke="#FFFFFF" stroke-opacity=".5" fill="none" stroke-width="1.6"><rect x="55" y="86" width="54" height="54" rx="4"/><rect x="124" y="86" width="54" height="54" rx="4"/><rect x="193" y="86" width="52" height="54" rx="4"/><rect x="55" y="154" width="54" height="54" rx="4"/><rect x="124" y="154" width="54" height="54" rx="4"/><path d="M62 240h12l16 60h108l14-42H88" stroke-linejoin="round"/><circle cx="104" cy="318" r="7"/><circle cx="188" cy="318" r="7"/></g></svg>
           </div>
@@ -421,7 +429,7 @@
           <div class="lab"><span class="lab-t">Ecommerce &amp; Subscription</span><span class="lab-d">Online stores and subscription sites built to sell and scale.</span></div>
         </a>
 
-        <a href="#contact" class="offer rv">
+        <a href="#work" class="offer rv" data-service="Listing website">
           <div class="art" style="background:linear-gradient(160deg,#7C3AED,#4c1d95)">
             <svg viewBox="0 0 300 380" preserveAspectRatio="xMidYMid slice"><g stroke="#FFFFFF" stroke-opacity=".5" fill="none" stroke-width="1.6"><rect x="55" y="90" width="190" height="34" rx="6"/><rect x="55" y="136" width="190" height="34" rx="6"/><rect x="55" y="182" width="190" height="34" rx="6"/><circle cx="150" cy="288" r="24"/><line x1="167" y1="305" x2="190" y2="328"/></g></svg>
           </div>
@@ -431,7 +439,7 @@
           <div class="lab"><span class="lab-t">Listing &amp; Recruitment</span><span class="lab-d">Directories and job boards with search, profiles and applications.</span></div>
         </a>
 
-        <a href="#contact" class="offer rv">
+        <a href="#work" class="offer rv" data-service="Custom development">
           <div class="art" style="background:linear-gradient(160deg,#100a1e,#070410)">
             <svg viewBox="0 0 300 380" preserveAspectRatio="xMidYMid slice"><g font-family="JetBrains Mono, monospace" font-size="13"><text x="44" y="100" fill="#2EA8FF" fill-opacity=".9">function build() {</text><text x="62" y="126" fill="#9A6BFF" fill-opacity=".9">  render(site);</text><text x="62" y="152" fill="#FF2E9A" fill-opacity=".9">  ship(it);</text><text x="44" y="178" fill="#2EA8FF" fill-opacity=".9">}</text></g><g stroke-width="1.6" fill="none" stroke-linejoin="round" stroke-linecap="round"><path d="M118 240l-22 24 22 24" stroke="#2EA8FF" stroke-opacity=".55"/><path d="M182 240l22 24-22 24" stroke="#FF2E9A" stroke-opacity=".55"/><line x1="158" y1="234" x2="142" y2="294" stroke="#9A6BFF" stroke-opacity=".55"/></g></svg>
           </div>
@@ -442,7 +450,7 @@
         </a>
 
         <!-- 5th card (assumption: Care & Maintenance). Rename the label/icon if you meant a different service. -->
-        <a href="#contact" class="offer rv">
+        <a href="#work" class="offer rv" data-service="Care & maintenance">
           <div class="art" style="background:linear-gradient(160deg,#2EA8FF,#7C3AED 55%,#FF2E9A)">
             <svg viewBox="0 0 300 380" preserveAspectRatio="xMidYMid slice"><g stroke="#FFFFFF" stroke-opacity=".5" fill="none" stroke-width="1.6" stroke-linecap="round"><circle cx="150" cy="150" r="34"/><circle cx="150" cy="150" r="13"/><path d="M150 96v22M150 182v22M96 150h22M182 150h22M112 112l16 16M172 172l16 16M188 112l-16 16M128 172l-16 16"/></g></svg>
           </div>
@@ -682,19 +690,52 @@
 
   /* FINISHED PROJECTS -> SELECTED WORK */
   const workCards=document.getElementById('workCards');
+  const workFilter=document.getElementById('workFilter'),workFilterName=document.getElementById('workFilterName'),workFilterClear=document.getElementById('workFilterClear');
+  let activeServiceFilter='';
+  function projectMatchesService(p,service){
+    if(!service)return true;
+    const serviceText=service.toLowerCase();
+    const haystack=[p.name,p.category,p.note,p.url,...(Array.isArray(p.services)?p.services:[])].join(' ').toLowerCase();
+    const aliases={
+      'brochure website':['brochure','informative','information','service information','travel agency','business website'],
+      'ecommerce':['ecommerce','subscription','shop','store','product','tableware','linen'],
+      'listing website':['listing','recruitment','directory','job','care','children services'],
+      'custom development':['custom','web app','platform','crowdfunding','booking','dashboard','portal'],
+      'care & maintenance':['care & maintenance','maintenance','support','hosting','security']
+    };
+    return (aliases[serviceText]||[serviceText]).some(term=>haystack.includes(term));
+  }
+  function updateWorkFilter(){
+    if(!workFilter||!workFilterName)return;
+    workFilter.classList.toggle('show',!!activeServiceFilter);
+    workFilterName.textContent=activeServiceFilter;
+    document.querySelectorAll('.offer[data-service]').forEach(card=>card.classList.toggle('active',card.dataset.service===activeServiceFilter));
+  }
   function renderWork(){
     if(!workCards)return;
     workCards.innerHTML='';
+    let count=0;
     Object.keys(projects).forEach(k=>{
       const p=projects[k];
       if(!p.url)return;
+      if(!projectMatchesService(p,activeServiceFilter))return;
       const stageLabel=STAGES[(p.stage||1)-1]||'Live';
       const a=document.createElement('a');
       a.href=p.url;a.target='_blank';a.rel='noopener';a.className='wcard rv in';
       a.innerHTML='<div class="shot"><img loading="lazy" alt="Screenshot of '+esc(displayName(k,p))+'" src="https://s.wordpress.com/mshots/v1/'+encodeURIComponent(p.url)+'?w=1200&h=750"></div><span class="badge"><span class="d"></span>'+esc(stageLabel)+'</span><div class="meta"><div><h3>'+esc(displayName(k,p))+'</h3><div class="c">'+esc(displayCategory(k,p))+'</div></div><span class="go">\u2197</span></div>';
       workCards.appendChild(a);
+      count++;
     });
+    if(!count&&activeServiceFilter)workCards.innerHTML='<div class="work-empty">No projects are currently marked under '+esc(activeServiceFilter)+'. Add that service to a project in the admin panel and it will appear here.</div>';
+    updateWorkFilter();
   }
+  document.querySelectorAll('.offer[data-service]').forEach(card=>{
+    card.addEventListener('click',()=>{
+      activeServiceFilter=card.dataset.service||'';
+      renderWork();
+    });
+  });
+  if(workFilterClear)workFilterClear.addEventListener('click',()=>{activeServiceFilter='';renderWork();});
   renderWork();
 
   /* STATUS CHECK */
