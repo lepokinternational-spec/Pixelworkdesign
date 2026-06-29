@@ -8,6 +8,7 @@
     "givver.ai": {
       "name": "Givver.ai",
       "category": "Custom development · Care & maintenance · Brochure website",
+      "services": [],
       "stage": 4,
       "note": "Launched and live.",
       "updated": "26 Jun 2026",
@@ -16,6 +17,7 @@
     "the linen collection": {
       "name": "The Linen Collection",
       "category": "Ecommerce",
+      "services": [],
       "stage": 4,
       "note": "Launched and live.",
       "updated": "26 Jun 2026",
@@ -24,6 +26,7 @@
     "brighthaven childrens services": {
       "name": "Brighthaven Childrens Services",
       "category": "Brochure website",
+      "services": [],
       "stage": 4,
       "note": "",
       "updated": "26 Jun 2026",
@@ -32,6 +35,7 @@
     "jlm collective": {
       "name": "JLM Collective",
       "category": "Ecommerce · Listing website",
+      "services": [],
       "stage": 4,
       "note": "",
       "updated": "26 Jun 2026",
@@ -40,6 +44,7 @@
     "sleek travel": {
       "name": "Sleek Travel",
       "category": "Brochure website",
+      "services": [],
       "stage": 4,
       "note": "",
       "updated": "26 Jun 2026",
@@ -48,6 +53,7 @@
     "venza care": {
       "name": "Venza Care",
       "category": "Recruitment · Brochure website · Listing website",
+      "services": [],
       "stage": 3,
       "note": "",
       "updated": "26 Jun 2026",
@@ -56,10 +62,23 @@
     "pixelwork design": {
       "name": "Pixelwork Design",
       "category": "Care & maintenance · Brochure website",
+      "services": [],
       "stage": 4,
       "note": "",
       "updated": "26 Jun 2026",
       "url": ""
+    },
+    "hair by nechama": {
+      "name": "Hair by Nechama",
+      "category": "Brochure website · Ecommerce",
+      "services": [
+        "Brochure website",
+        "Ecommerce"
+      ],
+      "stage": 3,
+      "note": "",
+      "updated": "29 Jun 2026",
+      "url": "https://hairbynechama-mm5forb6b-pixelwork-design.vercel.app/#top"
     }
   }
 }
