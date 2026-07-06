@@ -219,6 +219,9 @@
   .wcard .shot::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,20,0) 62%,rgba(10,10,20,.5));pointer-events:none}
   .wcard .badge{position:absolute;top:14px;left:14px;z-index:2;display:inline-flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:rgba(10,10,20,.5);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.18);padding:6px 11px;border-radius:30px}
   .wcard .badge .d{width:7px;height:7px;border-radius:50%;background:#3ee08a;box-shadow:0 0 8px #3ee08a}
+  .wcard.building{cursor:pointer}
+  .wcard.building .badge .d{background:#f5b84b;box-shadow:0 0 8px #f5b84b}
+  .wcard.building .go{font-size:13px;color:var(--faint)}
   .wcard .meta{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:20px 22px 22px}
   .wcard .meta h3{font-family:'Hanken Grotesk';font-weight:600;font-size:1.35rem;letter-spacing:-.02em;transition:.3s}
   .wcard:hover .meta h3{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
