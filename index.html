@@ -39,10 +39,10 @@
   .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 
   /* HEADER */
-  .sidebar{position:fixed;top:0;left:0;right:0;width:100%;min-height:104px;overflow:visible;border-bottom:1px solid var(--line);padding:22px var(--pad) 18px;display:grid;grid-template-columns:minmax(250px,340px) minmax(420px,1fr) auto;align-items:center;gap:32px;z-index:100;background:rgba(7,7,14,.86);backdrop-filter:blur(14px)}
+  .sidebar{position:fixed;top:18px;left:24px;right:24px;width:auto;height:92px;overflow:hidden;border:1px solid rgba(255,255,255,.13);border-radius:24px;padding:16px 22px 16px 30px;display:grid;grid-template-columns:minmax(240px,320px) minmax(360px,1fr) auto;align-items:center;gap:24px;z-index:100;background:linear-gradient(180deg,rgba(12,12,22,.9),rgba(7,7,14,.82));backdrop-filter:blur(18px);box-shadow:0 22px 60px rgba(0,0,0,.34)}
   .brand{display:block;min-width:0}
   .brand .mark{display:flex;align-items:center;gap:0}
-  .brand .logo-lockup{display:block;width:300px;max-width:100%}
+  .brand .logo-lockup{display:block;width:292px;max-width:100%}
   .brand .logo-lockup svg{display:block;width:100%;height:auto}
   .brand .wm{display:flex;flex-direction:column;line-height:1;font-family:'Hanken Grotesk'}
   .brand .wm .wm-l1{display:inline-flex;align-items:center;font-weight:700;font-size:24px;letter-spacing:-.02em;color:var(--fg)}
@@ -50,10 +50,10 @@
   .brand .pglyph svg{width:100%;height:100%;display:block}
   .brand .wm .wm-l2{font-weight:600;font-size:10.5px;letter-spacing:.44em;text-transform:uppercase;margin:7px 0 0 2px}
   .brand .tag{display:none;color:var(--muted);font-size:11px;margin-top:13px;max-width:210px;line-height:1.5;letter-spacing:.05em}
-  .side-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--grad);background-size:150% 150%;color:#fff;font-weight:700;font-size:14px;padding:14px 22px;border-radius:999px;transition:filter .3s,transform .3s;white-space:nowrap;box-shadow:0 14px 32px rgba(124,58,237,.24)}
+  .side-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--grad);background-size:150% 150%;color:#fff;font-weight:700;font-size:14px;padding:14px 22px;border-radius:14px;transition:filter .3s,transform .3s;white-space:nowrap;box-shadow:0 14px 32px rgba(124,58,237,.32)}
   .side-cta:hover{filter:brightness(1.12) saturate(1.08)}
   .side-cta:hover{transform:translateY(-1px)}
-  .side-nav{display:flex;align-items:center;justify-content:center;gap:34px;min-width:0}
+  .side-nav{display:flex;align-items:center;justify-content:center;gap:30px;min-width:0}
   .side-nav a{display:flex;align-items:center;gap:0;padding:11px 0;font-size:14px;font-weight:700;color:rgba(241,241,248,.9);transition:color .3s;position:relative;white-space:nowrap}
   .side-nav a .idx{display:none;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint);transition:color .3s;width:24px}
   .side-nav a::after{content:"";position:absolute;left:0;right:0;bottom:2px;width:0;height:1px;background:var(--grad);transition:width .35s cubic-bezier(.2,.8,.2,1)}
@@ -182,7 +182,7 @@
   .side-foot .cr{font-size:11px;color:var(--faint)}
 
   /* CONTENT */
-  .content{margin-left:0;padding-top:104px}
+  .content{margin-left:0;padding-top:112px}
   .pad{padding:0 var(--pad)}
   .rv{opacity:0;transform:translateY(28px);transition:opacity 1s cubic-bezier(.2,.8,.2,1),transform 1s cubic-bezier(.2,.8,.2,1)}
   .rv.in{opacity:1;transform:none}
@@ -315,26 +315,24 @@
   .send:hover{filter:brightness(1.12) saturate(1.1)}
 
   @media(min-width:981px) and (max-width:1240px){
-    .sidebar{grid-template-columns:1fr auto;grid-template-areas:"brand cta" "nav nav";gap:10px 24px;padding-top:18px;padding-bottom:16px}
-    .brand{grid-area:brand}
-    .side-nav{grid-area:nav;justify-content:flex-start;gap:28px}
-    .side-foot{grid-area:cta}
-    .brand .logo-lockup{width:270px}
+    .sidebar{left:16px;right:16px;grid-template-columns:minmax(210px,250px) minmax(320px,1fr) auto;gap:18px;padding-left:22px}
+    .brand .logo-lockup{width:238px}
+    .side-nav{gap:20px}
     .side-nav a{font-size:13px}
     .side-cta{font-size:13px;padding:13px 18px}
-    .content{padding-top:138px}
   }
 
   @media(min-width:981px) and (max-width:1060px){
-    .brand .logo-lockup{width:250px}
-    .side-nav{gap:22px}
+    .sidebar{height:86px;grid-template-columns:minmax(190px,218px) minmax(300px,1fr) auto;gap:14px}
+    .brand .logo-lockup{width:210px}
+    .side-nav{gap:16px}
     .side-nav a{font-size:12.5px}
     .side-cta{padding:12px 15px}
   }
 
   @media(max-width:980px){
     :root{--sidebar:0px;--pad:24px}
-    .sidebar{position:relative;top:0;left:0;right:0;width:100%;height:auto;min-height:0;display:flex;flex-direction:column;gap:40px;border:none;border-bottom:1px solid var(--line);border-radius:0;padding:30px 24px;box-shadow:none;background:rgba(12,12,20,.72)}
+    .sidebar{position:relative;top:0;left:0;right:0;width:100%;height:auto;display:flex;flex-direction:column;gap:40px;border:none;border-bottom:1px solid var(--line);border-radius:0;padding:30px 24px;box-shadow:none;background:rgba(12,12,20,.72)}
     .brand{flex:none}
     .brand .logo-lockup{width:238px}
     .brand .logo-lockup svg{width:100%;height:auto}
