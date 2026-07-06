@@ -587,6 +587,7 @@
                 <div class="admin-field"><label>Project name</label><input id="pName" placeholder="e.g. Acme Co."></div>
                 <div class="admin-field"><label>Live URL</label><input id="pUrl" placeholder="https://example.com"></div>
               </div>
+              <div class="admin-field"><label>Preview image URL</label><input id="pImage" placeholder="https://example.com/preview.jpg"></div>
               <div class="admin-fields-2">
                 <div class="admin-field"><label>Current stage</label><select id="pStage"><option value="1">Discover</option><option value="2">Design</option><option value="3">Build</option><option value="4">Launch</option></select></div>
                 <div class="admin-field"><label>Add service</label><select id="serviceAdd"><option value="">Choose a service</option></select><input id="pCategory" type="hidden"></div>
@@ -674,7 +675,7 @@
       const name=(p.name||k||'').trim();
       if(!name)return;
       const services=Array.isArray(p.services)?p.services.filter(Boolean):[];
-      next.projects[norm(name)]={name,category:p.category||'',services,stage:Math.min(4,Math.max(1,parseInt(p.stage||1,10))),note:p.note||'',updated:p.updated||'',url:p.url||''};
+      next.projects[norm(name)]={name,category:p.category||'',services,stage:Math.min(4,Math.max(1,parseInt(p.stage||1,10))),note:p.note||'',updated:p.updated||'',url:p.url||'',image:p.image||p.previewImage||p.screenshot||''};
     });
     return next;
   }
@@ -725,6 +726,14 @@
     };
     return (aliases[serviceText]||[serviceText]).some(term=>haystack.includes(term));
   }
+  function projectImage(p,isLaunch,name){
+    const saved=(p.image||p.previewImage||p.screenshot||'').trim();
+    if(saved)return saved;
+    if(isLaunch&&p.url)return 'https://s.wordpress.com/mshots/v1/'+encodeURIComponent(p.url)+'?w=1200&h=750';
+    const safeName=esc(name||'Project preview');
+    const svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750"><defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#2EA8FF"/><stop offset=".52" stop-color="#7C3AED"/><stop offset="1" stop-color="#FF2E9A"/></linearGradient></defs><rect width="1200" height="750" fill="#0D0D18"/><rect x="92" y="82" width="1016" height="586" rx="34" fill="#151524" stroke="#2B2B3D" stroke-width="3"/><rect x="138" y="130" width="924" height="58" rx="18" fill="#202034"/><circle cx="170" cy="159" r="9" fill="#FF5F57"/><circle cx="199" cy="159" r="9" fill="#FFBD2E"/><circle cx="228" cy="159" r="9" fill="#28C840"/><rect x="165" y="250" width="420" height="44" rx="14" fill="url(#g)" opacity=".95"/><rect x="165" y="326" width="710" height="22" rx="11" fill="#FFFFFF" opacity=".36"/><rect x="165" y="374" width="590" height="22" rx="11" fill="#FFFFFF" opacity=".24"/><rect x="165" y="474" width="210" height="54" rx="18" fill="url(#g)"/><rect x="690" y="244" width="310" height="250" rx="28" fill="#FFFFFF" opacity=".1"/><text x="165" y="620" font-family="Arial, sans-serif" font-size="38" fill="#F7F7FF" font-weight="700">'+safeName+'</text></svg>';
+    return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);
+  }
   function updateWorkFilter(){
     if(!workFilter||!workFilterName)return;
     workFilter.classList.toggle('show',!!activeServiceFilter);
@@ -737,19 +746,22 @@
     let count=0;
     Object.keys(projects).forEach(k=>{
       const p=projects[k];
-      if(!p.url)return;
+      if(!p.url&&!p.image&&!p.previewImage&&!p.screenshot)return;
       if(!projectMatchesService(p,activeServiceFilter))return;
       const isLaunch=(p.stage||1)===4;
       const stageLabel=STAGES[(p.stage||1)-1]||'Live';
+      const name=displayName(k,p);
+      const img=projectImage(p,isLaunch,name);
       const card=document.createElement(isLaunch?'a':'button');
       card.className='wcard rv in'+(isLaunch?'':' building');
-      if(isLaunch){card.href=p.url;card.target='_blank';card.rel='noopener';}
+      if(isLaunch&&p.url){card.href=p.url;card.target='_blank';card.rel='noopener';}
+      else if(isLaunch){card.href='#contact';}
       else{
         card.type='button';
-        card.setAttribute('aria-label',displayName(k,p)+' is still being built');
+        card.setAttribute('aria-label',name+' is still being built');
         card.addEventListener('click',()=>alert('This project is still being built. Please check back soon.'));
       }
-      card.innerHTML='<div class="shot"><img loading="lazy" alt="Screenshot of '+esc(displayName(k,p))+'" src="https://s.wordpress.com/mshots/v1/'+encodeURIComponent(p.url)+'?w=1200&h=750"></div><span class="badge"><span class="d"></span>'+esc(stageLabel)+'</span><div class="meta"><div><h3>'+esc(displayName(k,p))+'</h3><div class="c">'+esc(displayCategory(k,p))+'</div></div><span class="go">'+(isLaunch?'\u2197':'Preview only')+'</span></div>';
+      card.innerHTML='<div class="shot"><img loading="lazy" alt="Preview of '+esc(name)+'" src="'+esc(img)+'"></div><span class="badge"><span class="d"></span>'+esc(stageLabel)+'</span><div class="meta"><div><h3>'+esc(name)+'</h3><div class="c">'+esc(displayCategory(k,p))+'</div></div><span class="go">'+(isLaunch?'\u2197':'Preview only')+'</span></div>';
       workCards.appendChild(card);
       count++;
     });
@@ -814,7 +826,7 @@
   document.getElementById('gateInput').addEventListener('keydown',e=>{if(e.key==='Enter')unlockAdmin();});
   function fillDetails(){document.getElementById('dEmail').value=details.email||'';document.getElementById('dPhone').value=details.phone||'';document.getElementById('dCity').value=details.city||'';}
   function payload(){return {details,projects};}
-  const pNameInput=document.getElementById('pName'),pUrlInput=document.getElementById('pUrl'),pCategoryInput=document.getElementById('pCategory'),servicePicks=document.getElementById('servicePicks'),serviceAdd=document.getElementById('serviceAdd');
+  const pNameInput=document.getElementById('pName'),pUrlInput=document.getElementById('pUrl'),pImageInput=document.getElementById('pImage'),pCategoryInput=document.getElementById('pCategory'),servicePicks=document.getElementById('servicePicks'),serviceAdd=document.getElementById('serviceAdd');
   const pStageInput=document.getElementById('pStage'),pNoteInput=document.getElementById('pNote'),pSaveBtn=document.getElementById('pSave');
   function getSelectedServices(){
     if(!servicePicks)return [];
@@ -862,6 +874,7 @@
     editingProjectKey='';
     pNameInput.value='';
     pUrlInput.value='';
+    pImageInput.value='';
     pCategoryInput.value='';
     pCategoryInput.dataset.auto='';
     setSelectedServices([]);
@@ -876,6 +889,7 @@
     editingProjectKey=key;
     pNameInput.value=p.name||displayName(key,p);
     pUrlInput.value=p.url||'';
+    pImageInput.value=p.image||p.previewImage||p.screenshot||'';
     setSelectedServices(p.services||[]);
     pCategoryInput.value=getSelectedServices().join(' \u00b7 ')||p.category||inferCategory(pNameInput.value,pUrlInput.value);
     pCategoryInput.dataset.auto=(p.category||getSelectedServices().length)?'0':'1';
@@ -924,12 +938,13 @@
   document.getElementById('pSave').addEventListener('click',async()=>{
     const name=document.getElementById('pName').value.trim();if(!name)return;
     const url=document.getElementById('pUrl').value.trim();
+    const image=document.getElementById('pImage').value.trim();
     const services=getSelectedServices();
     const category=services.join(' \u00b7 ')||document.getElementById('pCategory').value.trim()||inferCategory(name,url);
     const oldKey=editingProjectKey;
     const oldProject=oldKey?projects[oldKey]:null;
     if(editingProjectKey&&editingProjectKey!==norm(name))delete projects[editingProjectKey];
-    projects[norm(name)]={name,category,services,stage:parseInt(document.getElementById('pStage').value,10),note:document.getElementById('pNote').value.trim(),url,updated:today()};
+    projects[norm(name)]={name,category,services,stage:parseInt(document.getElementById('pStage').value,10),note:document.getElementById('pNote').value.trim(),url,image,updated:today()};
     renderAdmin();renderWork();
     const saved=await saveToRepo(document.getElementById('pSave'),editingProjectKey?'Project updated.':'Project saved.');
     if(saved)clearProjectForm();
