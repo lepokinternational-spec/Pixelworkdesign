@@ -748,11 +748,18 @@
       const p=projects[k];
       if(!p.url)return;
       if(!projectMatchesService(p,activeServiceFilter))return;
+      const isLaunch=(p.stage||1)===4;
       const stageLabel=STAGES[(p.stage||1)-1]||'Live';
-      const a=document.createElement('a');
-      a.href=p.url;a.target='_blank';a.rel='noopener';a.className='wcard rv in';
-      a.innerHTML='<div class="shot"><img loading="lazy" alt="Screenshot of '+esc(displayName(k,p))+'" src="https://s.wordpress.com/mshots/v1/'+encodeURIComponent(p.url)+'?w=1200&h=750"></div><span class="badge"><span class="d"></span>'+esc(stageLabel)+'</span><div class="meta"><div><h3>'+esc(displayName(k,p))+'</h3><div class="c">'+esc(displayCategory(k,p))+'</div></div><span class="go">\u2197</span></div>';
-      workCards.appendChild(a);
+      const card=document.createElement(isLaunch?'a':'button');
+      card.className='wcard rv in'+(isLaunch?'':' building');
+      if(isLaunch){card.href=p.url;card.target='_blank';card.rel='noopener';}
+      else{
+        card.type='button';
+        card.setAttribute('aria-label',displayName(k,p)+' is still being built');
+        card.addEventListener('click',()=>alert('This project is still being built. Please check back soon.'));
+      }
+      card.innerHTML='<div class="shot"><img loading="lazy" alt="Screenshot of '+esc(displayName(k,p))+'" src="https://s.wordpress.com/mshots/v1/'+encodeURIComponent(p.url)+'?w=1200&h=750"></div><span class="badge"><span class="d"></span>'+esc(stageLabel)+'</span><div class="meta"><div><h3>'+esc(displayName(k,p))+'</h3><div class="c">'+esc(displayCategory(k,p))+'</div></div><span class="go">'+(isLaunch?'\u2197':'Preview only')+'</span></div>';
+      workCards.appendChild(card);
       count++;
     });
     if(!count&&activeServiceFilter)workCards.innerHTML='<div class="work-empty">No projects are currently marked under '+esc(activeServiceFilter)+'. Add that service to a project in the admin panel and it will appear here.</div>';
