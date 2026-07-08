@@ -232,7 +232,8 @@ async function readProjects(request, env) {
 
 async function checkAdminPasscode(request, env) {
   const token = getBearerToken(request);
-  if (!env.ADMIN_PASSCODE || token !== env.ADMIN_PASSCODE) {
+  const passcode = getAdminPasscode(env);
+  if (!passcode || token !== passcode) {
     return json({ error: "Unauthorized" }, 401, request, env);
   }
 
@@ -241,7 +242,8 @@ async function checkAdminPasscode(request, env) {
 
 async function writeProjects(request, env) {
   const token = getBearerToken(request);
-  if (!env.ADMIN_PASSCODE || token !== env.ADMIN_PASSCODE) {
+  const passcode = getAdminPasscode(env);
+  if (!passcode || token !== passcode) {
     return json({ error: "Unauthorized" }, 401, request, env);
   }
 
@@ -354,6 +356,10 @@ function branch(env) {
 function getBearerToken(request) {
   const header = request.headers.get("authorization") || "";
   return header.startsWith("Bearer ") ? header.slice(7).trim() : "";
+}
+
+function getAdminPasscode(env) {
+  return String(env.ADMIN_PASSCODE || "").trim();
 }
 
 function corsHeaders(request, env) {
