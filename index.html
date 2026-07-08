@@ -977,7 +977,7 @@
     }
   });
   async function saveToRepo(btn,success){
-    if(!adminPasscode){setStatus('Enter your admin passcode first.');return false;}
+    if(!adminPasscode||adminView.hidden){lockAdmin();setStatus('Enter your admin passcode first.');return false;}
     const oldText=btn.textContent;
     btn.disabled=true;btn.textContent='Saving...';setStatus('Saving to GitHub...');
     try{
