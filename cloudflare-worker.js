@@ -237,7 +237,7 @@ async function checkAdminPasscode(request, env) {
     return json({ error: "Unauthorized" }, 401, request, env);
   }
 
-  return json({ ok: true, adminToken: encodeAdminToken(passcode) }, 200, request, env);
+  return json({ ok: true, adminToken: encodeAdminToken(passcode), session: "admin" }, 200, request, env);
 }
 
 async function writeProjects(request, env) {
@@ -381,7 +381,8 @@ function isValidAdminRequest(request, passcode) {
   const directToken = getAdminToken(request);
   if (directToken === passcode) return true;
   const sessionToken = String(request.headers.get("x-admin-token") || "").trim();
-  return decodeAdminToken(sessionToken) === `pwd:${passcode}`;
+  const sessionType = String(request.headers.get("x-admin-session") || "").trim();
+  return sessionType === "admin" && decodeAdminToken(sessionToken) === `pwd:${passcode}`;
 }
 
 function corsHeaders(request, env) {
@@ -394,7 +395,7 @@ function corsHeaders(request, env) {
   return {
     "access-control-allow-origin": origin && allowed.includes(origin) ? origin : allowed[0],
     "access-control-allow-methods": "GET,POST,OPTIONS",
-    "access-control-allow-headers": "content-type,authorization,x-admin-passcode,x-admin-token",
+    "access-control-allow-headers": "content-type,authorization,x-admin-passcode,x-admin-token,x-admin-session",
     "vary": "Origin"
   };
 }
