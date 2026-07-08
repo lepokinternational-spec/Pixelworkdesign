@@ -985,7 +985,7 @@
     const oldText=btn.textContent;
     btn.disabled=true;btn.textContent='Saving...';setStatus('Saving to GitHub...');
     try{
-      const res=await fetch(ADMIN_API,{method:'POST',headers:{'Content-Type':'application/json','X-Admin-Token':adminToken,'X-Admin-Session':'admin'},body:JSON.stringify(payload())});
+      const res=await fetch(ADMIN_API,{method:'POST',headers:{'Content-Type':'application/json','X-Admin-Token':adminToken},body:JSON.stringify(payload())});
       if(!res.ok){
         let message='Save failed.';
         try{const body=await res.json();if(body.error)message=body.detail?body.error+': '+body.detail:body.error;}catch(e){}
