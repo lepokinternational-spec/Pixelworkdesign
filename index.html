@@ -548,18 +548,17 @@
     const name=(form.elements.name.value||'').trim();
     const email=(form.elements.email.value||'').trim();
     const msg=(form.elements.msg.value||'').trim();
-    const budget=document.querySelector('#budget .chip.on')?.textContent.trim()||'Not selected';
     b.disabled=true;b.textContent='Sending...';
     if(status){status.className='form-status';status.textContent='Sending your message...';}
     try{
-      const res=await fetch(CONTACT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,message:msg,budget})});
+      const res=await fetch(CONTACT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,message:msg})});
       if(!res.ok){
         let message='Message could not be sent. Please email pixlworkdesign@gmail.com.';
         try{const body=await res.json();if(body.error)message=body.error;}catch(err){}
         throw new Error(message);
       }
       if(status){status.className='form-status ok';status.textContent='Message sent. We will reply by email as soon as we can.';}
-      form.reset();document.querySelectorAll('#budget .chip').forEach(x=>x.classList.remove('on'));
+      form.reset();
     }catch(err){
       if(status){status.className='form-status err';status.textContent=err.message||'Message could not be sent. Please email pixlworkdesign@gmail.com.';}
     }finally{

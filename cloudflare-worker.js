@@ -67,7 +67,6 @@ async function sendContactEmail(request, env) {
   const name = text(payload.name, 100);
   const email = text(payload.email, 160);
   const message = text(payload.message, 3000);
-  const budget = text(payload.budget, 80) || "Not selected";
 
   if (!name || !email || !message) {
     return json({ error: "Name, email, and message are required" }, 400, request, env);
@@ -90,13 +89,12 @@ async function sendContactEmail(request, env) {
     "",
     `Name: ${name}`,
     `Email: ${email}`,
-    `Budget: ${budget}`,
     `Received: ${receivedAt}`,
     "",
     "Message:",
     message
   ].join("\n");
-  const html = contactEmailHtml({ name, email, budget, message, receivedAt });
+  const html = contactEmailHtml({ name, email, message, receivedAt });
 
   const ownerResponse = await sendResendEmail(env, {
     from,
@@ -460,10 +458,9 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
-function contactEmailHtml({ name, email, budget, message, receivedAt }) {
+function contactEmailHtml({ name, email, message, receivedAt }) {
   const safeName = escapeHtml(name);
   const safeEmail = escapeHtml(email);
-  const safeBudget = escapeHtml(budget);
   const safeReceivedAt = escapeHtml(receivedAt);
   const safeMessage = escapeHtml(message).replace(/\n/g, "<br>");
 
@@ -492,12 +489,6 @@ function contactEmailHtml({ name, email, budget, message, receivedAt }) {
                     <td style="padding:0 0 14px;width:50%;vertical-align:top;">
                       <div style="font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:#6b7280;font-weight:700;">Email</div>
                       <div style="font-size:18px;color:#111827;margin-top:5px;"><a href="mailto:${safeEmail}" style="color:#5f8fff;text-decoration:none;">${safeEmail}</a></div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td colspan="2" style="padding:14px 0 4px;border-top:1px solid #eef0f5;">
-                      <div style="font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:#6b7280;font-weight:700;">Budget</div>
-                      <div style="font-size:18px;color:#111827;margin-top:5px;">${safeBudget}</div>
                     </td>
                   </tr>
                 </table>
