@@ -9,10 +9,11 @@
       "name": "Givver.ai",
       "category": "Custom development · Care & maintenance · Brochure website",
       "services": [],
-      "stage": 4,
+      "stage": 3,
       "note": "Launched and live.",
-      "updated": "26 Jun 2026",
-      "url": "https://givver.ai/"
+      "updated": "8 Jul 2026",
+      "url": "https://givver.ai/",
+      "image": ""
     },
     "the linen collection": {
       "name": "The Linen Collection",
@@ -21,7 +22,8 @@
       "stage": 4,
       "note": "Launched and live.",
       "updated": "26 Jun 2026",
-      "url": "https://tcgemach.co.uk/"
+      "url": "https://tcgemach.co.uk/",
+      "image": ""
     },
     "brighthaven childrens services": {
       "name": "Brighthaven Childrens Services",
@@ -30,7 +32,8 @@
       "stage": 4,
       "note": "",
       "updated": "26 Jun 2026",
-      "url": "https://brighthavenservices.co.uk/"
+      "url": "https://brighthavenservices.co.uk/",
+      "image": ""
     },
     "jlm collective": {
       "name": "JLM Collective",
@@ -39,7 +42,8 @@
       "stage": 4,
       "note": "",
       "updated": "26 Jun 2026",
-      "url": "https://www.jlmcollective.co/"
+      "url": "https://www.jlmcollective.co/",
+      "image": ""
     },
     "sleek travel": {
       "name": "Sleek Travel",
@@ -48,7 +52,8 @@
       "stage": 4,
       "note": "",
       "updated": "26 Jun 2026",
-      "url": "https://www.sleektravel.co/"
+      "url": "https://www.sleektravel.co/",
+      "image": ""
     },
     "venza care": {
       "name": "Venza Care",
@@ -57,7 +62,8 @@
       "stage": 3,
       "note": "",
       "updated": "26 Jun 2026",
-      "url": "https://venzacare-b71c-gijs918fn-pixelwork-design.vercel.app/"
+      "url": "https://venzacare-b71c-gijs918fn-pixelwork-design.vercel.app/",
+      "image": ""
     },
     "pixelwork design": {
       "name": "Pixelwork Design",
@@ -66,7 +72,8 @@
       "stage": 4,
       "note": "",
       "updated": "26 Jun 2026",
-      "url": ""
+      "url": "",
+      "image": ""
     },
     "hair by nechama": {
       "name": "Hair by Nechama",
@@ -78,7 +85,8 @@
       "stage": 3,
       "note": "",
       "updated": "29 Jun 2026",
-      "url": "https://hairbynechama-mm5forb6b-pixelwork-design.vercel.app/#top"
+      "url": "https://hairbynechama-mm5forb6b-pixelwork-design.vercel.app/#top",
+      "image": ""
     }
   }
 }
