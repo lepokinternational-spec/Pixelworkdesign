@@ -80,14 +80,23 @@ async function sendContactEmail(request, env) {
   const to = env.CONTACT_TO || "pixlworkdesign@gmail.com";
   const from = env.CONTACT_FROM || "PixelWorksDesign <onboarding@resend.dev>";
   const subject = `Website enquiry from ${name}`;
+  const receivedAt = new Date().toLocaleString("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Europe/London"
+  });
   const body = [
+    "New PixelWorksDesign enquiry",
+    "",
     `Name: ${name}`,
     `Email: ${email}`,
     `Budget: ${budget}`,
+    `Received: ${receivedAt}`,
     "",
     "Message:",
     message
   ].join("\n");
+  const html = contactEmailHtml({ name, email, budget, message, receivedAt });
 
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -100,6 +109,7 @@ async function sendContactEmail(request, env) {
       to: [to],
       subject,
       text: body,
+      html,
       reply_to: email
     })
   });
@@ -413,6 +423,75 @@ function normalizeKey(value) {
 
 function text(value, max) {
   return String(value || "").trim().slice(0, max);
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function contactEmailHtml({ name, email, budget, message, receivedAt }) {
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
+  const safeBudget = escapeHtml(budget);
+  const safeReceivedAt = escapeHtml(receivedAt);
+  const safeMessage = escapeHtml(message).replace(/\n/g, "<br>");
+
+  return `<!doctype html>
+<html>
+  <body style="margin:0;padding:0;background:#f4f6fb;font-family:Arial,Helvetica,sans-serif;color:#111827;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f4f6fb;padding:28px 14px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:640px;background:#ffffff;border-radius:18px;overflow:hidden;border:1px solid #e5e7eb;">
+            <tr>
+              <td style="padding:28px 30px;background:#11121b;color:#ffffff;">
+                <div style="font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#9db8ff;margin-bottom:10px;">PixelWorksDesign</div>
+                <div style="font-size:28px;line-height:1.2;font-weight:700;">New website enquiry</div>
+                <div style="font-size:14px;color:#c9cfdf;margin-top:8px;">Received ${safeReceivedAt}</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:26px 30px 8px;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td style="padding:0 0 14px;width:50%;vertical-align:top;">
+                      <div style="font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:#6b7280;font-weight:700;">Name</div>
+                      <div style="font-size:18px;color:#111827;margin-top:5px;">${safeName}</div>
+                    </td>
+                    <td style="padding:0 0 14px;width:50%;vertical-align:top;">
+                      <div style="font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:#6b7280;font-weight:700;">Email</div>
+                      <div style="font-size:18px;color:#111827;margin-top:5px;"><a href="mailto:${safeEmail}" style="color:#5f8fff;text-decoration:none;">${safeEmail}</a></div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" style="padding:14px 0 4px;border-top:1px solid #eef0f5;">
+                      <div style="font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:#6b7280;font-weight:700;">Budget</div>
+                      <div style="font-size:18px;color:#111827;margin-top:5px;">${safeBudget}</div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:18px 30px 30px;">
+                <div style="font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:#6b7280;font-weight:700;margin-bottom:9px;">Message</div>
+                <div style="font-size:17px;line-height:1.6;color:#1f2937;background:#f8fafc;border:1px solid #e8ecf4;border-radius:14px;padding:18px 20px;">${safeMessage}</div>
+                <div style="margin-top:22px;">
+                  <a href="mailto:${safeEmail}" style="display:inline-block;background:linear-gradient(90deg,#63a5ff,#8a42e8,#db3f9a);color:#ffffff;text-decoration:none;font-weight:700;border-radius:999px;padding:13px 22px;">Reply to ${safeName}</a>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
 }
 
 function clampStage(value) {
