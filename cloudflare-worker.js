@@ -308,7 +308,8 @@ function sanitizePayload(payload) {
       stage: clampStage(rawProject.stage),
       note: text(rawProject.note, 220),
       updated: text(rawProject.updated, 40),
-      url: cleanUrl(rawProject.url)
+      url: cleanUrl(rawProject.url),
+      image: cleanImage(rawProject.image)
     };
   }
 
@@ -404,6 +405,15 @@ function cleanUrl(value) {
   } catch {
     return "";
   }
+}
+
+function cleanImage(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  if (/^data:image\/(?:jpeg|png|webp);base64,[a-z0-9+/=]+$/i.test(raw)) {
+    return raw.length <= 700000 ? raw : "";
+  }
+  return cleanUrl(raw);
 }
 
 function firstUrl(value) {
