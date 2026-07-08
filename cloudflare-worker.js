@@ -255,7 +255,8 @@ async function writeProjects(request, env) {
 
   const current = await githubFetch(env, contentsUrl(env));
   if (!current.ok) {
-    return json({ error: "Could not read current projects.json" }, current.status, request, env);
+    const detail = await current.text();
+    return json({ error: "GitHub token could not read projects.json", detail: text(detail, 1000) }, 403, request, env);
   }
 
   const currentFile = await current.json();
@@ -323,11 +324,12 @@ function sanitizePayload(payload) {
 }
 
 function githubFetch(env, url, init = {}) {
+  const token = String(env.GITHUB_TOKEN || "").trim();
   return fetch(url, {
     ...init,
     headers: {
       "accept": "application/vnd.github+json",
-      "authorization": `Bearer ${env.GITHUB_TOKEN}`,
+      ...(token ? { "authorization": `Bearer ${token}` } : {}),
       "content-type": "application/json",
       "user-agent": "pixelworkdesign-admin",
       "x-github-api-version": "2022-11-28",

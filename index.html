@@ -1002,7 +1002,7 @@
         let message='Save failed.';
         try{const body=await res.json();if(body.error)message=body.detail?body.error+': '+body.detail:body.error;}catch(e){}
         if(res.status===401)message='Admin save was rejected. Close admin, unlock again, and save.';
-        if(res.status===403)message='GitHub token does not have permission to write projects.json.';
+        if(res.status===403)message='GitHub token problem. Check the GITHUB_TOKEN secret in Cloudflare has repo contents read/write access.';
         if(res.status===404)message='Admin API is not connected yet. Deploy the Cloudflare Worker first.';
         if(res.status===500)message='Worker error. Check the Cloudflare Worker variables and secrets.';
         throw new Error(message);
