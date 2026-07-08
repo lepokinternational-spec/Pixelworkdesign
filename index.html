@@ -134,6 +134,8 @@
   .admin-field input,.admin-field select,.admin-field textarea{width:100%;background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.16);border-radius:11px;padding:12px 13px;font-family:'Hanken Grotesk';font-size:15px;color:var(--fg);transition:border-color .25s,background .25s,box-shadow .25s}
   .admin-field input:focus,.admin-field select:focus,.admin-field textarea:focus{outline:none;border-color:var(--accent2);background:rgba(255,255,255,.09);box-shadow:0 0 0 3px rgba(46,168,255,.17)}
   .admin-field select option{background:#13131F}
+  .admin-field input[type=file]{padding:10px}
+  .admin-field input[type=file]::file-selector-button{border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.08);color:#fff;font-family:'Hanken Grotesk';font-weight:700;padding:8px 12px;margin-right:12px;cursor:pointer}
   .admin-hint{color:var(--faint);font-size:12.5px;line-height:1.45;margin-top:8px}
   .service-picks{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;min-height:35px}
   .service-pick{border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.065);color:#D7D7E8;padding:8px 11px;font-size:12.5px;font-weight:700;cursor:pointer;transition:.2s}
@@ -587,7 +589,11 @@
                 <div class="admin-field"><label>Project name</label><input id="pName" placeholder="e.g. Acme Co."></div>
                 <div class="admin-field"><label>Live URL</label><input id="pUrl" placeholder="https://example.com"></div>
               </div>
-              <div class="admin-field"><label>Preview image URL</label><input id="pImage" placeholder="https://example.com/preview.jpg"></div>
+              <div class="admin-fields-2">
+                <div class="admin-field"><label>Preview image URL</label><input id="pImage" placeholder="https://example.com/preview.jpg"></div>
+                <div class="admin-field"><label>Homepage screenshot</label><input id="pImageFile" type="file" accept="image/png,image/jpeg,image/webp"></div>
+              </div>
+              <div class="admin-hint">For projects in Build, upload a screenshot of the homepage here. It will show on the website even if the live URL is private.</div>
               <div class="admin-fields-2">
                 <div class="admin-field"><label>Current stage</label><select id="pStage"><option value="1">Discover</option><option value="2">Design</option><option value="3">Build</option><option value="4">Launch</option></select></div>
                 <div class="admin-field"><label>Add service</label><select id="serviceAdd"><option value="">Choose a service</option></select><input id="pCategory" type="hidden"></div>
