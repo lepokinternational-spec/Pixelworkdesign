@@ -231,7 +231,7 @@ async function readProjects(request, env) {
 }
 
 async function checkAdminPasscode(request, env) {
-  const token = getBearerToken(request);
+  const token = getAdminToken(request);
   const passcode = getAdminPasscode(env);
   if (!passcode || token !== passcode) {
     return json({ error: "Unauthorized" }, 401, request, env);
@@ -241,7 +241,7 @@ async function checkAdminPasscode(request, env) {
 }
 
 async function writeProjects(request, env) {
-  const token = getBearerToken(request);
+  const token = getAdminToken(request);
   const passcode = getAdminPasscode(env);
   if (!passcode || token !== passcode) {
     return json({ error: "Unauthorized" }, 401, request, env);
@@ -358,6 +358,10 @@ function getBearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7).trim() : "";
 }
 
+function getAdminToken(request) {
+  return getBearerToken(request) || String(request.headers.get("x-admin-passcode") || "").trim();
+}
+
 function getAdminPasscode(env) {
   return String(env.ADMIN_PASSCODE || "").trim();
 }
@@ -372,7 +376,7 @@ function corsHeaders(request, env) {
   return {
     "access-control-allow-origin": origin && allowed.includes(origin) ? origin : allowed[0],
     "access-control-allow-methods": "GET,POST,OPTIONS",
-    "access-control-allow-headers": "content-type,authorization",
+    "access-control-allow-headers": "content-type,authorization,x-admin-passcode",
     "vary": "Origin"
   };
 }
