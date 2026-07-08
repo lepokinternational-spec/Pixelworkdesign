@@ -98,28 +98,54 @@ async function sendContactEmail(request, env) {
   ].join("\n");
   const html = contactEmailHtml({ name, email, budget, message, receivedAt });
 
-  const response = await fetch("https://api.resend.com/emails", {
+  const ownerResponse = await sendResendEmail(env, {
+    from,
+    to: [to],
+    subject,
+    text: body,
+    html,
+    reply_to: email
+  });
+
+  if (!ownerResponse.ok) {
+    const detail = await ownerResponse.text();
+    return json({ error: "Email send failed", detail: text(detail, 1000) }, ownerResponse.status, request, env);
+  }
+
+  const confirmationResponse = await sendResendEmail(env, {
+    from,
+    to: [email],
+    subject: "We received your PixelWorksDesign enquiry",
+    text: [
+      `Hi ${name},`,
+      "",
+      "Thanks for contacting PixelWorksDesign. We have received your message and will get back to you by email as soon as we can.",
+      "",
+      "Your message:",
+      message,
+      "",
+      "PixelWorksDesign"
+    ].join("\n"),
+    html: confirmationEmailHtml({ name, message })
+  });
+
+  if (!confirmationResponse.ok) {
+    const detail = await confirmationResponse.text();
+    return json({ error: "Confirmation email failed", detail: text(detail, 1000) }, confirmationResponse.status, request, env);
+  }
+
+  return json({ ok: true }, 200, request, env);
+}
+
+function sendResendEmail(env, payload) {
+  return fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
       "authorization": `Bearer ${env.RESEND_API_KEY}`,
       "content-type": "application/json"
     },
-    body: JSON.stringify({
-      from,
-      to: [to],
-      subject,
-      text: body,
-      html,
-      reply_to: email
-    })
+    body: JSON.stringify(payload)
   });
-
-  if (!response.ok) {
-    const detail = await response.text();
-    return json({ error: "Email send failed", detail: text(detail, 1000) }, response.status, request, env);
-  }
-
-  return json({ ok: true }, 200, request, env);
 }
 
 async function chatEstimate(request, env) {
@@ -484,6 +510,39 @@ function contactEmailHtml({ name, email, budget, message, receivedAt }) {
                 <div style="margin-top:22px;">
                   <a href="mailto:${safeEmail}" style="display:inline-block;background:linear-gradient(90deg,#63a5ff,#8a42e8,#db3f9a);color:#ffffff;text-decoration:none;font-weight:700;border-radius:999px;padding:13px 22px;">Reply to ${safeName}</a>
                 </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+}
+
+function confirmationEmailHtml({ name, message }) {
+  const safeName = escapeHtml(name);
+  const safeMessage = escapeHtml(message).replace(/\n/g, "<br>");
+
+  return `<!doctype html>
+<html>
+  <body style="margin:0;padding:0;background:#f4f6fb;font-family:Arial,Helvetica,sans-serif;color:#111827;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f4f6fb;padding:28px 14px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:620px;background:#ffffff;border-radius:18px;overflow:hidden;border:1px solid #e5e7eb;">
+            <tr>
+              <td style="padding:28px 30px;background:#11121b;color:#ffffff;">
+                <div style="font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#9db8ff;margin-bottom:10px;">PixelWorksDesign</div>
+                <div style="font-size:28px;line-height:1.2;font-weight:700;">Thanks, ${safeName}</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:28px 30px 30px;">
+                <div style="font-size:18px;line-height:1.6;color:#1f2937;">We have received your message and will get back to you by email as soon as we can.</div>
+                <div style="font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:#6b7280;font-weight:700;margin:24px 0 9px;">Your message</div>
+                <div style="font-size:16px;line-height:1.6;color:#1f2937;background:#f8fafc;border:1px solid #e8ecf4;border-radius:14px;padding:18px 20px;">${safeMessage}</div>
+                <div style="font-size:14px;line-height:1.6;color:#6b7280;margin-top:24px;">PixelWorksDesign</div>
               </td>
             </tr>
           </table>
