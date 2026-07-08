@@ -796,10 +796,16 @@
   const modal=document.getElementById('adminModal'),gateView=document.getElementById('gateView'),adminView=document.getElementById('adminView');
   const adminStatus=document.getElementById('adminStatus');
   function setStatus(msg){if(adminStatus)adminStatus.textContent=msg||'';}
-  document.getElementById('adminOpen').addEventListener('click',e=>{e.preventDefault();modal.classList.add('show');});
-  if(location.hash==='#admin')modal.classList.add('show');
-  window.addEventListener('hashchange',()=>{if(location.hash==='#admin')modal.classList.add('show');});
-  function closeModal(){modal.classList.remove('show');gateView.style.display='block';adminView.style.display='none';setStatus('');}
+  function lockAdmin(){
+    adminPasscode='';
+    gateView.style.display='block';
+    adminView.style.display='none';
+  }
+  function openAdminModal(){lockAdmin();modal.classList.add('show');}
+  document.getElementById('adminOpen').addEventListener('click',e=>{e.preventDefault();openAdminModal();});
+  if(location.hash==='#admin')openAdminModal();
+  window.addEventListener('hashchange',()=>{if(location.hash==='#admin')openAdminModal();});
+  function closeModal(){modal.classList.remove('show');lockAdmin();setStatus('');}
   document.getElementById('adminClose').addEventListener('click',closeModal);
   modal.addEventListener('click',e=>{if(e.target===modal)closeModal();});
   async function unlockAdmin(){
@@ -807,14 +813,17 @@
     const btn=document.getElementById('gateBtn');
     const passcode=g.value.trim();
     if(!passcode){g.placeholder='Enter your admin passcode';return;}
+    lockAdmin();
     btn.disabled=true;btn.textContent='Checking...';
     try{
       const res=await fetch(ADMIN_CHECK_API,{method:'POST',headers:{'Authorization':'Bearer '+passcode}});
       if(!res.ok)throw new Error(res.status===401?'Wrong admin passcode.':'Could not check the admin passcode.');
+      const body=await res.json();
+      if(!body||body.ok!==true)throw new Error('Could not confirm the admin passcode.');
       adminPasscode=passcode;
       gateView.style.display='none';adminView.style.display='block';renderAdmin();fillDetails();g.value='';setStatus('Changes will be committed to projects.json.');
     }catch(e){
-      adminPasscode='';
+      lockAdmin();
       g.value='';
       g.placeholder='Wrong passcode';
       alert(e.message||'Wrong admin passcode.');
