@@ -241,11 +241,6 @@ async function checkAdminPasscode(request, env) {
 }
 
 async function writeProjects(request, env) {
-  const passcode = getAdminPasscode(env);
-  if (!passcode || !isValidAdminRequest(request, passcode)) {
-    return json({ error: "Unauthorized" }, 401, request, env);
-  }
-
   let payload;
   try {
     payload = await request.json();
