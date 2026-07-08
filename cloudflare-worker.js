@@ -359,7 +359,7 @@ function getBearerToken(request) {
 }
 
 function getAdminToken(request) {
-  return getBearerToken(request) || String(request.headers.get("x-admin-passcode") || "").trim();
+  return String(request.headers.get("x-admin-passcode") || "").trim() || getBearerToken(request);
 }
 
 function getAdminPasscode(env) {
