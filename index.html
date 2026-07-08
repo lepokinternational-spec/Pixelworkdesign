@@ -646,6 +646,7 @@
     }
   };
   let adminPasscode='';
+  let adminToken='';
   let details=clone(seedData.details);
   let projects=clone(seedData.projects);
   let editingProjectKey='';
@@ -805,6 +806,7 @@
   function setStatus(msg){if(adminStatus)adminStatus.textContent=msg||'';}
   function lockAdmin(){
     adminPasscode='';
+    adminToken='';
     gateView.hidden=false;
     gateView.setAttribute('aria-hidden','false');
     adminView.hidden=true;
@@ -830,6 +832,8 @@
       const body=await res.json();
       if(!body||body.ok!==true)throw new Error('Could not confirm the admin passcode.');
       adminPasscode=passcode;
+      adminToken=body.adminToken||'';
+      if(!adminToken)throw new Error('Could not start the admin session.');
       gateView.hidden=true;
       gateView.setAttribute('aria-hidden','true');
       adminView.hidden=false;
@@ -977,15 +981,15 @@
     }
   });
   async function saveToRepo(btn,success){
-    if(!adminPasscode||adminView.hidden){lockAdmin();setStatus('Enter your admin passcode first.');return false;}
+    if(!adminToken||adminView.hidden){lockAdmin();setStatus('Enter your admin passcode first.');return false;}
     const oldText=btn.textContent;
     btn.disabled=true;btn.textContent='Saving...';setStatus('Saving to GitHub...');
     try{
-      const res=await fetch(ADMIN_API,{method:'POST',headers:{'Content-Type':'application/json','X-Admin-Passcode':adminPasscode},body:JSON.stringify(payload())});
+      const res=await fetch(ADMIN_API,{method:'POST',headers:{'Content-Type':'application/json','X-Admin-Token':adminToken},body:JSON.stringify(payload())});
       if(!res.ok){
         let message='Save failed.';
         try{const body=await res.json();if(body.error)message=body.detail?body.error+': '+body.detail:body.error;}catch(e){}
-        if(res.status===401)message='Wrong admin passcode. Check the ADMIN_PASSCODE secret in Cloudflare.';
+        if(res.status===401)message='Admin session expired. Close admin, unlock again, and save.';
         if(res.status===403)message='GitHub token does not have permission to write projects.json.';
         if(res.status===404)message='Admin API is not connected yet. Deploy the Cloudflare Worker first.';
         if(res.status===500)message='Worker error. Check the Cloudflare Worker variables and secrets.';
