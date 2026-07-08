@@ -841,8 +841,43 @@
   document.getElementById('gateInput').addEventListener('keydown',e=>{if(e.key==='Enter')unlockAdmin();});
   function fillDetails(){document.getElementById('dEmail').value=details.email||'';document.getElementById('dPhone').value=details.phone||'';document.getElementById('dCity').value=details.city||'';}
   function payload(){return {details,projects};}
-  const pNameInput=document.getElementById('pName'),pUrlInput=document.getElementById('pUrl'),pImageInput=document.getElementById('pImage'),pCategoryInput=document.getElementById('pCategory'),servicePicks=document.getElementById('servicePicks'),serviceAdd=document.getElementById('serviceAdd');
+  const pNameInput=document.getElementById('pName'),pUrlInput=document.getElementById('pUrl'),pImageInput=document.getElementById('pImage'),pImageFileInput=document.getElementById('pImageFile'),pCategoryInput=document.getElementById('pCategory'),servicePicks=document.getElementById('servicePicks'),serviceAdd=document.getElementById('serviceAdd');
   const pStageInput=document.getElementById('pStage'),pNoteInput=document.getElementById('pNote'),pSaveBtn=document.getElementById('pSave');
+  let pendingProjectImage='';
+  function readFileAsDataUrl(file){
+    return new Promise((resolve,reject)=>{
+      const reader=new FileReader();
+      reader.onload=()=>resolve(reader.result);
+      reader.onerror=()=>reject(new Error('Could not read the screenshot file.'));
+      reader.readAsDataURL(file);
+    });
+  }
+  async function compressProjectImage(file){
+    if(!file)return '';
+    if(!/^image\/(png|jpeg|webp)$/.test(file.type))throw new Error('Upload a PNG, JPG or WebP screenshot.');
+    if(file.size>5*1024*1024)throw new Error('Screenshot is too large. Please use an image under 5MB.');
+    const source=await readFileAsDataUrl(file);
+    return new Promise((resolve,reject)=>{
+      const img=new Image();
+      img.onload=()=>{
+        const canvas=document.createElement('canvas');
+        const width=1200;
+        const height=750;
+        canvas.width=width;
+        canvas.height=height;
+        const ctx=canvas.getContext('2d');
+        ctx.fillStyle='#0D0D18';
+        ctx.fillRect(0,0,width,height);
+        const scale=Math.max(width/img.width,height/img.height);
+        const drawWidth=img.width*scale;
+        const drawHeight=img.height*scale;
+        ctx.drawImage(img,(width-drawWidth)/2,(height-drawHeight)/2,drawWidth,drawHeight);
+        resolve(canvas.toDataURL('image/jpeg',0.82));
+      };
+      img.onerror=()=>reject(new Error('Could not load that screenshot image.'));
+      img.src=source;
+    });
+  }
   function getSelectedServices(){
     if(!servicePicks)return [];
     return Array.from(servicePicks.querySelectorAll('.service-pick')).map(btn=>btn.dataset.service);
@@ -890,6 +925,8 @@
     pNameInput.value='';
     pUrlInput.value='';
     pImageInput.value='';
+    pImageFileInput.value='';
+    pendingProjectImage='';
     pCategoryInput.value='';
     pCategoryInput.dataset.auto='';
     setSelectedServices([]);
@@ -905,6 +942,8 @@
     pNameInput.value=p.name||displayName(key,p);
     pUrlInput.value=p.url||'';
     pImageInput.value=p.image||p.previewImage||p.screenshot||'';
+    pImageFileInput.value='';
+    pendingProjectImage='';
     setSelectedServices(p.services||[]);
     pCategoryInput.value=getSelectedServices().join(' \u00b7 ')||p.category||inferCategory(pNameInput.value,pUrlInput.value);
     pCategoryInput.dataset.auto=(p.category||getSelectedServices().length)?'0':'1';
@@ -916,6 +955,20 @@
     pNameInput.focus();
   }
   document.getElementById('adminNew').addEventListener('click',()=>{clearProjectForm();pNameInput.focus();});
+  pImageFileInput.addEventListener('change',async()=>{
+    const file=pImageFileInput.files&&pImageFileInput.files[0];
+    if(!file){pendingProjectImage='';return;}
+    try{
+      setStatus('Preparing homepage screenshot...');
+      pendingProjectImage=await compressProjectImage(file);
+      pImageInput.value='Uploaded homepage screenshot';
+      setStatus('Homepage screenshot ready. Save the project to publish it.');
+    }catch(e){
+      pendingProjectImage='';
+      pImageFileInput.value='';
+      setStatus(e.message||'Could not prepare screenshot.');
+    }
+  });
   async function saveToRepo(btn,success){
     if(!adminPasscode){setStatus('Enter your admin passcode first.');return false;}
     const oldText=btn.textContent;
@@ -953,7 +1006,7 @@
   document.getElementById('pSave').addEventListener('click',async()=>{
     const name=document.getElementById('pName').value.trim();if(!name)return;
     const url=document.getElementById('pUrl').value.trim();
-    const image=document.getElementById('pImage').value.trim();
+    const image=pendingProjectImage||document.getElementById('pImage').value.trim();
     const services=getSelectedServices();
     const category=services.join(' \u00b7 ')||document.getElementById('pCategory').value.trim()||inferCategory(name,url);
     const oldKey=editingProjectKey;
