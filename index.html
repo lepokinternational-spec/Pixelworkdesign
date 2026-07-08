@@ -108,6 +108,7 @@
   .admin-link:hover{color:var(--accent2)}
   .modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(5,5,12,.78);backdrop-filter:blur(10px)}
   .modal.show{display:flex}
+  .modal [hidden]{display:none!important}
   .modal-card{width:100%;max-width:920px;max-height:90vh;overflow:auto;background:linear-gradient(160deg,#181827,#10101B 58%,#0B0B14);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:0;box-shadow:0 30px 90px rgba(0,0,0,.56)}
   .modal-head{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:22px 24px;border-bottom:1px solid rgba(255,255,255,.1);background:rgba(18,18,30,.92);backdrop-filter:blur(10px)}
   .modal-head h3{font-family:'Hanken Grotesk';font-weight:700;font-size:24px;letter-spacing:-.02em}
@@ -575,7 +576,7 @@
       <button class="admin-save" id="gateBtn">Unlock</button>
       <div class="gate-note">Enter your private admin passcode. Changes are sent to the secure API and committed to the GitHub repo as <b style="color:var(--fg)">projects.json</b>.</div>
     </div>
-    <div class="admin-shell" id="adminView" style="display:none">
+    <div class="admin-shell" id="adminView" hidden aria-hidden="true">
       <div class="admin-topline">
         <div><strong>Manage the website</strong><div class="modal-sub" style="margin:0">Use the dropdowns below. Changes save to the live website data.</div></div>
         <button class="admin-ghost" id="adminNew" type="button">New project</button>
@@ -804,8 +805,10 @@
   function setStatus(msg){if(adminStatus)adminStatus.textContent=msg||'';}
   function lockAdmin(){
     adminPasscode='';
-    gateView.style.display='block';
-    adminView.style.display='none';
+    gateView.hidden=false;
+    gateView.setAttribute('aria-hidden','false');
+    adminView.hidden=true;
+    adminView.setAttribute('aria-hidden','true');
   }
   function openAdminModal(){lockAdmin();modal.classList.add('show');}
   document.getElementById('adminOpen').addEventListener('click',e=>{e.preventDefault();openAdminModal();});
@@ -827,7 +830,11 @@
       const body=await res.json();
       if(!body||body.ok!==true)throw new Error('Could not confirm the admin passcode.');
       adminPasscode=passcode;
-      gateView.style.display='none';adminView.style.display='block';renderAdmin();fillDetails();g.value='';setStatus('Changes will be committed to projects.json.');
+      gateView.hidden=true;
+      gateView.setAttribute('aria-hidden','true');
+      adminView.hidden=false;
+      adminView.setAttribute('aria-hidden','false');
+      renderAdmin();fillDetails();g.value='';setStatus('Changes will be committed to projects.json.');
     }catch(e){
       lockAdmin();
       g.value='';
