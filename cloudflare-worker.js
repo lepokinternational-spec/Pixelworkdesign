@@ -439,7 +439,7 @@ function cleanImage(value) {
   const raw = String(value || "").trim();
   if (!raw) return "";
   if (/^data:image\/(?:jpeg|png|webp);base64,[a-z0-9+/=]+$/i.test(raw)) {
-    return raw.length <= 700000 ? raw : "";
+    return raw.length <= 350000 ? raw : "";
   }
   return cleanUrl(raw);
 }
